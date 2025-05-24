@@ -25,7 +25,7 @@ export const dummyCompetitions: Competition[] = [
   {
     id: '1',
     name: 'Summer Tournament 2023',
-    image: 'https://example.com/tournament1.jpg',
+    image: 'https://img.sofascore.com/api/v1/unique-tournament/8/image/dark',
     description: 'Annual summer sports competition',
     startDate: '2023-06-01',
     endDate: '2023-08-31',
@@ -33,7 +33,7 @@ export const dummyCompetitions: Competition[] = [
   {
     id: '2',
     name: 'Winter League 2023',
-    image: 'https://example.com/tournament2.jpg',
+    image: 'https://img.sofascore.com/api/v1/unique-tournament/7/image/dark',
     description: 'Winter championship series',
     startDate: '2023-12-01',
     endDate: '2024-02-28',
@@ -41,7 +41,7 @@ export const dummyCompetitions: Competition[] = [
   {
     id: '3',
     name: 'Spring Cup 2023',
-    image: 'https://example.com/tournament3.jpg',
+    image: 'https://img.sofascore.com/api/v1/unique-tournament/329/image/dark',
     description: 'Spring seasonal tournament',
     startDate: '2023-03-15',
     endDate: '2023-05-15',
