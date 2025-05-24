@@ -1,14 +1,19 @@
+// app/(tabs)/index.tsx
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { dummyCompetitions } from "@/dummyData";
 import { FlatList } from "react-native";
 import CompetitionListItem from "@/components/CompetitionListItem";
 import Banner from "@/components/Banner";
+import React from 'react';
+import { Competition } from '@/types';
 
 export default function HomeScreen() {
+  const Wrapper = GluestackUIProvider;
+
   return (
-    <GluestackUIProvider>
+    <Wrapper>
       <FlatList
-        className="p-4"
+        className="flex-1 px-4 pt-4"
         data={dummyCompetitions}
         ListHeaderComponent={
           <Banner
@@ -18,8 +23,11 @@ export default function HomeScreen() {
             imageUrl="https://staff19torneos.com/wp-content/uploads/2025/05/logo_sc_f1f1f1.png"
           />
         }
-        renderItem={({ item }) => <CompetitionListItem competition={item} />}
+        renderItem={({ item }: { item: Competition }) => (
+          <CompetitionListItem competition={item} />
+        )}
+        keyExtractor={(item) => item.id}
       />
-    </GluestackUIProvider>
+    </Wrapper>
   );
 }
