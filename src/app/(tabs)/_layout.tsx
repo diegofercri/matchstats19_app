@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { HomeIcon } from "@components/icons/Home";
 import { ProfileIcon } from "@components/icons/Profile";
+import { WebIcon } from "@components/icons/Web";
 
 export default function TabsLayout() {
   return (
@@ -21,6 +22,13 @@ export default function TabsLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ color }) => <ProfileIcon fill={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="web"
+        options={{
+          title: "Web",
+          tabBarIcon: ({ color }) => <WebIcon fill={color} />,
         }}
       />
     </Tabs>

@@ -1,18 +1,18 @@
-// Banner.tsx
-import { Text, View, Image, Pressable, Linking } from "react-native";
+// src/components/Banner.tsx
+import { Text, View, Image, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
 type BannerProps = {
   title: string;
   slug: string;
   date: string;
   imageUrl: string;
-  link: string;
 };
 
-const Banner = ({ title, slug, date, imageUrl, link }: BannerProps) => {
+const Banner = ({ title, slug, date, imageUrl }: BannerProps) => {
   const handlePress = () => {
-    Linking.openURL(link);
+    router.push("/web");
   };
 
   return (

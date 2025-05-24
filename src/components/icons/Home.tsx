@@ -5,7 +5,7 @@ export function HomeIcon({ fill = "#d8ff00", ...props }: SvgProps) {
     <Svg
       width={24}
       height={24}
-      viewBox="0 0 22 22"
+      viewBox="0 0 24 24"
       {...props}
     >
       <Path

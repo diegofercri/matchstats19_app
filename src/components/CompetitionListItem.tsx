@@ -10,7 +10,7 @@ export default function CompetitionListItem({ competition }: {competition: Compe
     <Card
       size={"lg"}
       variant={"filled"}
-      className={"mb-4 flex flex-row items-center gap-5 rounded-3xl"}
+      className={"mb-4 flex flex-row items-center gap-5"}
     >
       <Image source={{ uri: competition.image }} className={"w-16 h-16"} alt={competition.name} />
       <View>

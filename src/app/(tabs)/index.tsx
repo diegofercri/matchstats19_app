@@ -16,7 +16,6 @@ export default function HomeScreen() {
             title="Staff Cup II"
             date="14 de Junio - 2025"
             imageUrl="https://staff19torneos.com/wp-content/uploads/2025/05/logo_sc_f1f1f1.png"
-            link="https://staff19torneos.com/"
           />
         }
         renderItem={({ item }) => <CompetitionListItem competition={item} />}
