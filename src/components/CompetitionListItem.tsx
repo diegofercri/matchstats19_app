@@ -9,27 +9,12 @@ import { Link } from 'expo-router';
 
 export default function CompetitionListItem({ competition }: { competition: Competition; }) {
   return (
-    <Link href={`/${competition.id}`} asChild>
-      <Pressable
-        // className para estilos de layout y base que no dependen del estado de presión
-        className="mb-4"
-        // La prop 'style' puede ser una función que recibe el estado de presión
-        style={({ pressed }) => [
-          {
-            opacity: pressed ? 0.7 : 1.0, // Cambia la opacidad cuando está presionado
-            // Puedes añadir otros cambios de estilo basados en el estado 'pressed' aquí
-            // transform: pressed ? [{ scale: 0.98 }] : [{ scale: 1.0 }], // Ejemplo: un ligero encogimiento
-          },
-          // Si tienes estilos base que quieres mantener en el objeto StyleSheet (aunque aquí usamos NativeWind)
-          // podrías añadirlos aquí también.
-        ]}
-      >
-        {/* El contenido de tu Card no cambia */}
+    <Link href={`/(tabs)/${competition.id}`} asChild>
+      <Pressable className="mb-4" >
         <Card
           size={"lg"}
           variant={"filled"}
           className={"flex flex-row items-center gap-5 p-4 rounded-xl shadow"}
-          // Ajusta las clases de la Card según el diseño que ya tenías o quieras.
         >
           <Image
             source={{ uri: competition.image }}
