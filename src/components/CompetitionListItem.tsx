@@ -1,5 +1,4 @@
 // components/CompetitionListItem.tsx
-import React from "react";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
