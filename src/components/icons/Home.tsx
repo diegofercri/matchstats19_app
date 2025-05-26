@@ -1,6 +1,7 @@
 import { Svg, Path, SvgProps } from 'react-native-svg';
+import { colors } from '@colors';
 
-export function HomeIcon({ fill = "#d8ff00", ...props }: SvgProps) {
+export function HomeIcon({ fill = colors.interactive.primary, ...props }: SvgProps) {
   return (
     <Svg
       width={24}

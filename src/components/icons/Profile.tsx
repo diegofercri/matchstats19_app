@@ -1,6 +1,7 @@
 import { Svg, Path, SvgProps } from 'react-native-svg';
+import { colors } from '@colors';
 
-export function ProfileIcon({ fill = "#d8ff00", ...props }: SvgProps) {
+export function ProfileIcon({ fill = colors.interactive.primary, ...props }: SvgProps) {
   return (
     <Svg
       width={24}

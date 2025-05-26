@@ -1,22 +1,48 @@
-import { View, Text } from 'react-native';
-import { Competition } from '@/types';
+import { View, Text, StyleSheet } from 'react-native';
+import { colors } from '@colors';
+import { Competition, Season } from '@/types';
 
+interface OverviewProps {
+  competition: Competition;
+  season?: Season;
+}
 
-const Overview = ({ competition }: { competition: Competition }) => (
-  <View className="p-4">
-    <View className="mb-3">
-      <Text className="text-base font-semibold text-slate-100">Descripción:</Text>
-      <Text className="text-base text-slate-200">{competition.description}</Text>
-    </View>
-    <View className="mb-3">
-      <Text className="text-base font-semibold text-slate-100">Fecha de Inicio:</Text>
-      <Text className="text-base text-slate-200">{new Date(competition.startDate).toLocaleDateString()}</Text>
-    </View>
+const Overview = ({ competition, season }: OverviewProps) => {
+  const description = competition?.description || competition.description;
+  const startDate = season?.startDate || competition.startDate;
+  const endDate = season?.endDate || competition.endDate;
+
+  return (
     <View>
-      <Text className="text-base font-semibold text-slate-100">Fecha de Fin:</Text>
-      <Text className="text-base text-slate-200">{new Date(competition.endDate).toLocaleDateString()}</Text>
+      <View style={styles.section}>
+        <Text style={styles.label}>Descripción:</Text>
+        <Text style={styles.value}>{description}</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.label}>Fecha de Inicio:</Text>
+        <Text style={styles.value}>{new Date(startDate).toLocaleDateString()}</Text>
+      </View>
+      <View>
+        <Text style={styles.label}>Fecha de Fin:</Text>
+        <Text style={styles.value}>{new Date(endDate).toLocaleDateString()}</Text>
+      </View>
     </View>
-  </View>
-);
+  );
+};
+
+const styles = StyleSheet.create({
+  section: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  value: {
+    fontSize: 13,
+    color: colors.text.secondary,
+  },
+});
 
 export default Overview;

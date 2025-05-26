@@ -1,15 +1,21 @@
-// app/(tabs)/[id].tsx
-import React, { useState, useCallback } from "react";
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
-import { Stack, useLocalSearchParams, useFocusEffect, router } from "expo-router";
+import React, { useState, useCallback, useEffect } from "react";
+import { View, Text, Image, ScrollView, Pressable, StyleSheet } from "react-native";
+import {
+  Stack,
+  useLocalSearchParams,
+  useFocusEffect,
+  router,
+} from "expo-router";
 import { dummyCompetitions } from "@/dummyData";
 import Overview from "@/components/competition/Overview";
 import Matches from "@/components/competition/Matches";
 import Standings from "@/components/competition/Standigns";
-import { Ionicons } from '@expo/vector-icons';
+import SeasonSelect from "@/components/competition/SeasonSelect";
+import TabNavigation, { TabOption } from "@/components/competition/TabNavigation";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from '@colors';
 
-
-const VIEW_OPTIONS = [
+const VIEW_OPTIONS: TabOption[] = [
   { id: "standings", label: "Clasificación", component: Standings },
   { id: "matches", label: "Partidos", component: Matches },
   { id: "overview", label: "Información", component: Overview },
@@ -19,31 +25,58 @@ export default function CompetitionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const competition = dummyCompetitions.find((comp) => comp.id === id);
 
-  // Inicializa con el primer botón, se reseteará en useFocusEffect
   const [activeViewId, setActiveViewId] = useState(VIEW_OPTIONS[0].id);
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string | undefined>(
+    undefined
+  );
 
-  // Hook para resetear la vista activa cada vez que la pantalla obtiene el foco
+  useEffect(() => {
+    if (competition) {
+      const currentSeasonStillValid = competition.seasons?.find(
+        (s) => s.id === selectedSeasonId
+      );
+      if (!currentSeasonStillValid) {
+        setSelectedSeasonId(
+          competition.defaultSeasonId || competition.seasons?.[0]?.id
+        );
+      }
+    } else {
+      setSelectedSeasonId(undefined);
+    }
+  }, [competition]);
+
   useFocusEffect(
     useCallback(() => {
-      // Siempre establece la vista activa al primer elemento de VIEW_OPTIONS
       setActiveViewId(VIEW_OPTIONS[0].id);
-    }, []) // El array de dependencias vacío asegura que el callback se memoriza
-          // y el efecto se ejecuta al enfocar/desenfocar la pantalla.
+    }, [])
   );
 
   if (!competition) {
     return (
-      <View className="flex-1 items-center justify-center p-4">
-        <Text className="text-lg text-slate-100">
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>
           Competición no encontrada.
         </Text>
       </View>
     );
   }
 
+  const selectedSeason = competition?.seasons?.find(
+    (s) => s.id === selectedSeasonId
+  );
+
+  const handleSeasonChange = (seasonId: string) => {
+    setSelectedSeasonId(seasonId);
+  };
+
   const ActiveViewComponent = VIEW_OPTIONS.find(
     (option) => option.id === activeViewId
   )?.component;
+
+  const seasonsForSelect = competition?.seasons?.map(season => ({
+    label: season.name,
+    value: season.id,
+  })) || [];
 
   return (
     <>
@@ -51,105 +84,67 @@ export default function CompetitionDetailScreen() {
         options={{
           title: competition.name,
           headerShown: true,
-          headerBackButtonDisplayMode: 'minimal',
+          headerBackButtonDisplayMode: "minimal",
           headerLeft: ({ tintColor, canGoBack }) => {
             if (!canGoBack) {
-              return null; // No muestra el botón si no se puede retroceder
+              return null;
             }
             return (
               <Pressable
-                onPress={() => router.back()} // Usa router.back() para la acción de retroceso
+                onPress={() => router.back()}
               >
                 <Ionicons
-                  name='chevron-back'// Icono específico de plataforma
+                  name="chevron-back"
                   size={24}
-                  color={tintColor} // Color del ícono (proporcionado por React Navigation)
+                  color={tintColor}
                 />
               </Pressable>
             );
           },
         }}
       />
-      {/* ScrollView principal de la página.*/}
-      <ScrollView className="flex-1">
-        <View
-          style={{
-            alignItems: 'center',
-            paddingTop: 24, // Equivalente a py-6 ( Tailwind: 6 * 4px = 24px )
-            paddingHorizontal: 16, // Equivalente a px-4
-          }}
-        >
-          <View
-            style={{
-              width: 160, // Equivalente a w-40
-              height: 160, // Equivalente a h-40
-              borderRadius: 80,
-              backgroundColor: '#202020',
-              overflow: 'hidden',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 24, // Equivalente a p-6
-            }}
-          >
+      <ScrollView 
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.imageContainer}>
+          <View style={styles.imageWrapper}>
             <Image
               source={{ uri: competition.image }}
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
+              style={styles.image}
               resizeMode="cover"
             />
           </View>
         </View>
 
-        {/* Contenedor del título.*/}
-        <View className="p-4">
-          <Text className="p-4 text-2xl font-bold text-center text-slate-100">
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>
             {competition.name}
           </Text>
         </View>
 
-        {/* Botones de Navegación Interna - CON SCROLL HORIZONTAL Y SEPARACIÓN */}
-        <View>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingTop: 4,
-              paddingBottom: 16,
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            {VIEW_OPTIONS.map((option) => (
-              <Pressable
-                key={option.id}
-                onPress={() => setActiveViewId(option.id)}
-                className={`py-3 px-4 rounded-full ${
-                  activeViewId === option.id ? "bg-[#d8ff00]" : "bg-[#202020]"
-                }`}
-              >
-                <Text
-                  className={`font-semibold ${
-                    activeViewId === option.id
-                      ? "text-zinc-900"
-                      : "text-slate-100"
-                  }`}
-                >
-                  {option.label}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+        <View style={styles.seasonSelectContainer}>
+          <SeasonSelect
+            seasons={seasonsForSelect}
+            selectedValue={selectedSeasonId}
+            onValueChange={handleSeasonChange}
+            placeholder="Temporada"
+          />
         </View>
 
-        {/* Contenido Dinámico según la vista activa */}
-        <View className="mt-1 px-4 pb-4">
-          {ActiveViewComponent && competition && (
+        <TabNavigation
+          options={VIEW_OPTIONS}
+          activeTabId={activeViewId}
+          onTabChange={setActiveViewId}
+        />
+
+        <View style={styles.contentContainer}>
+          {ActiveViewComponent && (
             <ActiveViewComponent
               competition={competition}
-              competitionId={competition.id}
+              season={selectedSeason}
+              matches={selectedSeason?.matches}
+              standings={selectedSeason?.standings}
             />
           )}
         </View>
@@ -157,3 +152,67 @@ export default function CompetitionDetailScreen() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: colors.background.primary,
+  },
+  
+  imageContainer: {
+    alignItems: 'center',
+    paddingTop: 24,
+    paddingHorizontal: 16,
+    paddingBottom: 42,
+  },
+  imageWrapper: {
+    width: 160,
+    height: 160,
+    borderRadius: 16,
+    backgroundColor: colors.background.secondary,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  
+  errorText: {
+    fontSize: 18,
+    color: colors.text.primary,
+  },
+  titleContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 42,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: colors.text.primary,
+  },
+  
+  seasonSelectContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  
+  contentContainer: {
+    paddingTop: 24,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+});

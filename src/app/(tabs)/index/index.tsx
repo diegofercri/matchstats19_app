@@ -1,11 +1,11 @@
-// app/(tabs)/index.tsx
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { dummyCompetitions } from "@/dummyData";
-import { FlatList } from "react-native";
-import CompetitionListItem from "@/components/CompetitionListItem";
-import Banner from "@/components/Banner";
+import { FlatList, StyleSheet } from "react-native";
+import CompetitionListItem from "@/components/index/CompetitionListItem";
+import Banner from "@/components/index/Banner";
 import React from 'react';
 import { Competition } from '@/types';
+import { colors } from '@colors';
 
 export default function HomeScreen() {
   const Wrapper = GluestackUIProvider;
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   return (
     <Wrapper>
       <FlatList
-        className="flex-1 px-4 pt-4"
+        style={styles.container}
         data={dummyCompetitions}
         ListHeaderComponent={
           <Banner
@@ -31,3 +31,12 @@ export default function HomeScreen() {
     </Wrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    backgroundColor: colors.background.primary,
+  },
+});

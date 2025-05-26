@@ -17,6 +17,7 @@
     "@gluestack-ui/select": "^0.1.31",
     "@gluestack-ui/toast": "^1.0.9",
     "@legendapp/motion": "^2.4.0",
+    "@react-native-picker/picker": "^2.11.0",
     "expo": "~53.0.9",
     "expo-constants": "~17.1.6",
     "expo-linear-gradient": "^14.1.4",

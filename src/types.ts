@@ -58,8 +58,9 @@ export interface Season {
   name: string;        // ej: "2024/2025"
   teams?: Team[];       // Lista de equipos participantes en esta temporada
   matches?: Match[];    // Lista de partidos de esta temporada
-  standings?: StandingEntry[]; // Tabla de clasificación de esta temporada (si aplica)
-  // podrías añadir: topScorers, seasonWinner, etc.
+  standings?: StandingEntry[];
+  startDate: string;
+  endDate: string;
 }
 
 export interface Competition {

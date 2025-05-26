@@ -1,42 +1,79 @@
-// src/app/(tabs)/web.tsx
 import { WebView } from "react-native-webview";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { colors } from '@colors';
+import { useRef } from 'react';
 
 export default function WebViewScreen() {
-  let webViewRef: WebView | null = null;
+  const webViewRef = useRef<WebView>(null);
 
   return (
-    <View className="flex-1">
+    <View style={styles.container}>
       <WebView
-        ref={(ref) => (webViewRef = ref)}
+        ref={webViewRef}
         source={{ uri: "https://staff19torneos.com/" }}
-        className="flex-1"
+        style={styles.webview}
       />
-      <View className="absolute top-4 left-0 right-0 px-4 flex-row justify-between">
-        <View className="flex-row">
+      <View style={styles.controlsContainer}>
+        <View style={styles.navigationButtons}>
           <TouchableOpacity 
-            onPress={() => webViewRef?.goBack()} 
-            className="bg-[#d8ff00] p-3 mr-1 rounded-full"
+            onPress={() => webViewRef.current?.goBack()} 
+            style={[styles.button, styles.backButton]}
           >
-            <Ionicons name="arrow-back" size={24} color="dark" />
+            <Ionicons name="arrow-back" size={24} color={colors.interactive.primaryText} />
           </TouchableOpacity>
           <TouchableOpacity 
-            onPress={() => webViewRef?.goForward()} 
-            className="bg-[#d8ff00] p-3 ml-1 rounded-full"
+            onPress={() => webViewRef?.current?.goForward()} 
+            style={[styles.button, styles.forwardButton]}
           >
-            <Ionicons name="arrow-forward" size={24} color="dark" />
+            <Ionicons name="arrow-forward" size={24} color={colors.interactive.primaryText} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity 
-          onPress={() => webViewRef?.reload()} 
-          className="bg-[#d8ff00] p-3 rounded-full"
+          onPress={() => webViewRef?.current?.reload()} 
+          style={styles.button}
         >
-          <View className="pl-0.5">
-            <Ionicons name="reload" size={24} color="dark" />
+          <View style={styles.reloadIcon}>
+            <Ionicons name="reload" size={24} color={colors.interactive.primaryText} />
           </View>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  webview: {
+    flex: 1,
+  },
+  controlsContainer: {
+    position: 'absolute',
+    top: 16,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  navigationButtons: {
+    flexDirection: 'row',
+  },
+  button: {
+    backgroundColor: colors.interactive.primary,
+    padding: 12,
+    borderRadius: 24,
+  },
+  backButton: {
+    marginRight: 4,
+  },
+  forwardButton: {
+    marginLeft: 4,
+  },
+  reloadIcon: {
+    paddingLeft: 2,
+  },
+});

@@ -1,73 +1,159 @@
-// components/competition/SeasonSelect.tsx
-import React from 'react';
-import { View, StyleSheet } from 'react-native'; // Importa View y StyleSheet
-import {
-  Select,
-  SelectTrigger,
-  SelectInput,
-  SelectIcon,
-  SelectPortal,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectItem
-} from "@/components/ui/select"; // Asegúrate que esta ruta sea correcta para tu proyecto
-import { ChevronDownIcon } from "@/components/ui/icon";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "@colors";
 
 interface Season {
-  id: string;
-  name: string;
+  label: string;
+  value: string;
+  isDisabled?: boolean;
 }
 
 interface SeasonSelectProps {
-  availableSeasons: Season[];
-  selectedSeasonId: string | undefined;
-  onSeasonChange: (seasonId: string) => void;
-  containerStyle?: object; // Para pasar el estilo de posicionamiento absoluto
-  // Podrías añadir más props para personalizar el trigger, input, etc. si es necesario
-  // placeholder?: string; 
+  seasons: Season[];
+  selectedValue?: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
 }
 
-export default function SeasonSelect({
-  availableSeasons,
-  selectedSeasonId,
-  onSeasonChange,
-  containerStyle,
-  // placeholder = "Seleccionar Temporada", // Ejemplo de placeholder personalizable
+function SeasonSelect({
+  seasons,
+  selectedValue,
+  onValueChange,
+  placeholder = "Temporada",
+  disabled = false,
 }: SeasonSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const defaultValue = selectedValue || (seasons.length > 0 ? seasons[0].value : undefined);
+  const selectedSeason = seasons.find(season => season.value === defaultValue);
+  const displayText = selectedSeason ? selectedSeason.label : placeholder;
+  
+  const handleSelect = (value: string) => {
+    onValueChange(value);
+    setIsOpen(false);
+  };
+
   return (
-    // El View exterior recibe el estilo para el posicionamiento absoluto
-    <View style={containerStyle}> 
-      <Select selectedValue={selectedSeasonId} onValueChange={onSeasonChange}>
-        <SelectTrigger variant="outline" size="md" /* style={tuTriggerStyleSiLoNecesitas} */ >
-          <SelectInput 
-            placeholder={"Seleccionar Temporada"} // Placeholder directamente aquí
-            // style={tuInputStyleSiLoNecesitas} 
-          />
-          <SelectIcon className="mr-3" as={ChevronDownIcon} />
-        </SelectTrigger>
-        <SelectPortal>
-          <SelectBackdrop />
-          <SelectContent>
-            <SelectDragIndicatorWrapper>
-              <SelectDragIndicator />
-            </SelectDragIndicatorWrapper>
-            {availableSeasons.map((season) => (
-              <SelectItem key={season.id} label={season.name} value={season.id} />
-            ))}
-            {availableSeasons.length === 0 && (
-              <SelectItem label="No hay temporadas" value="" isDisabled={true} />
-            )}
-          </SelectContent>
-        </SelectPortal>
-      </Select>
+    <View style={styles.container}>
+      <Pressable
+        style={[styles.trigger, disabled && styles.disabled]}
+        onPress={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+      >
+        <Text style={styles.triggerText}>
+          {displayText}
+        </Text>
+        <Ionicons
+          name={isOpen ? "chevron-up" : "chevron-down"}
+          size={16}
+          color={colors.text.tertiary}
+          style={styles.arrow}
+        />
+      </Pressable>
+
+      {isOpen && (
+        <View style={styles.dropdown}>
+          {seasons.map((item, index) => (
+            <Pressable
+              key={item.value}
+              style={[
+                styles.option,
+                index === seasons.length - 1 && styles.lastOption,
+                item.value === defaultValue && styles.selectedOption,
+                item.isDisabled && styles.disabledOption
+              ]}
+              onPress={() => !item.isDisabled && handleSelect(item.value)}
+              disabled={item.isDisabled}
+            >
+              <Text style={[
+                styles.optionText,
+                item.value === defaultValue && styles.selectedOptionText,
+                item.isDisabled && styles.disabledOptionText
+              ]}>
+                {item.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
 
-// Podrías tener estilos internos mínimos aquí si fueran necesarios para el componente en sí,
-// pero el posicionamiento principal vendrá del padre.
-// const styles = StyleSheet.create({
-//   // estilos internos del componente si los necesitas
-// });
+const styles = StyleSheet.create({
+  container: {
+    width: 140,
+    position: 'relative',
+    zIndex: 1000,
+  },
+  trigger: {
+    backgroundColor: colors.background.surface,
+    borderRadius: 9999,
+    paddingLeft: 18,
+    paddingRight: 14,
+    paddingVertical: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 40,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  triggerText: {
+    color: colors.text.tertiary,
+    fontSize: 14,
+    flex: 1,
+  },
+  arrow: {
+    marginLeft: 8,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: colors.background.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border.secondary,
+    marginTop: 4,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    zIndex: 1001,
+  },
+  option: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.secondary,
+  },
+  lastOption: {
+    borderBottomWidth: 0,
+  },
+  selectedOption: {
+    backgroundColor: colors.interactive.hover,
+  },
+  disabledOption: {
+    opacity: 0.5,
+  },
+  optionText: {
+    color: colors.text.secondary,
+    fontSize: 14,
+  },
+  selectedOptionText: {
+    color: colors.interactive.primary,
+    fontWeight: '600',
+  },
+  disabledOptionText: {
+    color: colors.text.muted,
+  },
+});
+
+export default SeasonSelect;
