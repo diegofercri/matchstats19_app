@@ -1,11 +1,13 @@
 // app/(tabs)/[id].tsx
-import React, { useState, useCallback } from "react"; // Importado useCallback
+import React, { useState, useCallback } from "react";
 import { View, Text, Image, ScrollView, Pressable } from "react-native";
-import { Stack, useLocalSearchParams, useFocusEffect } from "expo-router"; // Importado useFocusEffect
+import { Stack, useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import { dummyCompetitions } from "@/dummyData";
 import Overview from "@/components/competition/Overview";
 import Matches from "@/components/competition/Matches";
-import Standings from "@/components/competition/Standigns"; // Mantengo "Standigns" como lo escribiste
+import Standings from "@/components/competition/Standigns";
+import { Ionicons } from '@expo/vector-icons';
+
 
 const VIEW_OPTIONS = [
   { id: "standings", label: "Clasificación", component: Standings },
@@ -49,6 +51,23 @@ export default function CompetitionDetailScreen() {
         options={{
           title: competition.name,
           headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          headerLeft: ({ tintColor, canGoBack }) => {
+            if (!canGoBack) {
+              return null; // No muestra el botón si no se puede retroceder
+            }
+            return (
+              <Pressable
+                onPress={() => router.back()} // Usa router.back() para la acción de retroceso
+              >
+                <Ionicons
+                  name='chevron-back'// Icono específico de plataforma
+                  size={24}
+                  color={tintColor} // Color del ícono (proporcionado por React Navigation)
+                />
+              </Pressable>
+            );
+          },
         }}
       />
       {/* ScrollView principal de la página.*/}

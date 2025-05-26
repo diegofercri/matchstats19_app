@@ -16,7 +16,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Inicio",
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color }) => <HomeIcon fill={color} />,
         }}
       />
@@ -34,15 +34,6 @@ export default function TabsLayout() {
           title: "Web",
           headerShown: true,
           tabBarIcon: ({ color }) => <WebIcon fill={color} />,
-        }}
-      />
-
-      {/* Define la ruta [id].tsx pero NO la muestra en la barra de pestañas */}
-      <Tabs.Screen
-        name="[id]" // Corresponde al archivo app/(tabs)/[id].tsx
-        options={{
-          href: null, // ¡MUY IMPORTANTE! Esto oculta la pantalla de la barra de pestañas.
-                      // La pantalla sigue siendo navegable, pero no es una pestaña principal.
         }}
       />
     </Tabs>

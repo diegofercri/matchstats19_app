@@ -5,12 +5,25 @@ import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
 import { Image, View, Pressable } from "react-native"; // Importa Pressable en lugar de TouchableOpacity
 import { Competition } from "@/types";
-import { Link } from 'expo-router';
+import { Link } from "expo-router";
 
-export default function CompetitionListItem({ competition }: { competition: Competition; }) {
+export default function CompetitionListItem({
+  competition,
+}: {
+  competition: Competition;
+}) {
   return (
-    <Link href={`/(tabs)/${competition.id}`} asChild>
-      <Pressable className="mb-4" >
+    <Link
+      href={{
+        // Opción 1: Relativa
+        pathname: "./[id]",
+        // Opción 2: Absoluta (más explícita)
+        //pathname: '/(tabs)/index/[id]',
+        params: { id: competition.id },
+      }}
+      asChild
+    >
+      <Pressable className="mb-4">
         <Card
           size={"lg"}
           variant={"filled"}
