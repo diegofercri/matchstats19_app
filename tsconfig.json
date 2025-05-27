@@ -13,9 +13,6 @@
       "@components/*": [
         "src/components/*"
       ],
-      "@ui/*": [
-        "src/components/ui/*"
-      ],
       "@colors": [
         "src/theme/colors.ts"
       ],
