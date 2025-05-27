@@ -10,22 +10,19 @@ import { dummyCompetitions } from "@/dummyData";
 import Overview from "@/components/competition/Overview";
 import Matches from "@/components/competition/Matches";
 import Standings from "@/components/competition/Standigns";
+import Groups from "@/components/competition/Groups";
+import Knockouts from "@/components/competition/Knockouts";
 import SeasonSelect from "@/components/competition/SeasonSelect";
 import TabNavigation, { TabOption } from "@/components/competition/TabNavigation";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from '@colors';
-
-const VIEW_OPTIONS: TabOption[] = [
-  { id: "standings", label: "Clasificación", component: Standings },
-  { id: "matches", label: "Partidos", component: Matches },
-  { id: "overview", label: "Información", component: Overview },
-];
+import { Phase, Season } from '@/types';
 
 export default function CompetitionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const competition = dummyCompetitions.find((comp) => comp.id === id);
 
-  const [activeViewId, setActiveViewId] = useState(VIEW_OPTIONS[0].id);
+  const [activeViewId, setActiveViewId] = useState<string>("matches");
   const [selectedSeasonId, setSelectedSeasonId] = useState<string | undefined>(
     undefined
   );
@@ -36,9 +33,8 @@ export default function CompetitionDetailScreen() {
         (s) => s.id === selectedSeasonId
       );
       if (!currentSeasonStillValid) {
-        setSelectedSeasonId(
-          competition.defaultSeasonId || competition.seasons?.[0]?.id
-        );
+        const newSeasonId = competition.defaultSeasonId || competition.seasons?.[0]?.id;
+        setSelectedSeasonId(newSeasonId);
       }
     } else {
       setSelectedSeasonId(undefined);
@@ -47,7 +43,7 @@ export default function CompetitionDetailScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setActiveViewId(VIEW_OPTIONS[0].id);
+      setActiveViewId("matches");
     }, [])
   );
 
@@ -69,7 +65,58 @@ export default function CompetitionDetailScreen() {
     setSelectedSeasonId(seasonId);
   };
 
-  const ActiveViewComponent = VIEW_OPTIONS.find(
+  // Generate dynamic tab options based on selected season
+  const getViewOptions = (): TabOption[] => {
+    const options: TabOption[] = [];
+
+    if (selectedSeason?.phases) {
+      // Competition has phases - show all available phase types as tabs
+      const hasGroups = selectedSeason.phases.some(phase => phase.type === 'groups');
+      const hasKnockouts = selectedSeason.phases.some(phase => phase.type === 'knockout');
+      
+      if (hasGroups) {
+        options.push({ id: "groups", label: "Grupos", component: Groups });
+      }
+      if (hasKnockouts) {
+        options.push({ id: "knockouts", label: "Eliminatorias", component: Knockouts });
+      }
+      
+      // Get all matches from all phases
+      const allMatches = selectedSeason.phases.flatMap(phase => 
+        phase.type === 'groups' 
+          ? phase.groups?.flatMap(group => group.matches) || []
+          : phase.rounds?.flatMap(round => round.matches) || []
+      );
+      
+      if (allMatches.length > 0) {
+        options.push({ id: "matches", label: "Partidos", component: Matches });
+      }
+    } else if (selectedSeason) {
+      // Traditional season structure (like LaLiga)
+      if (selectedSeason.standings && selectedSeason.standings.length > 0) {
+        options.push({ id: "standings", label: "Clasificación", component: Standings });
+      }
+      if (selectedSeason.matches && selectedSeason.matches.length > 0) {
+        options.push({ id: "matches", label: "Partidos", component: Matches });
+      }
+    }
+
+    // Information is always available
+    options.push({ id: "overview", label: "Información", component: Overview });
+
+    return options;
+  };
+
+  const viewOptions = getViewOptions();
+
+  // Ensure active view is valid for current options
+  useEffect(() => {
+    if (viewOptions.length > 0 && !viewOptions.find(opt => opt.id === activeViewId)) {
+      setActiveViewId(viewOptions[0].id);
+    }
+  }, [viewOptions, activeViewId]);
+
+  const ActiveViewComponent = viewOptions.find(
     (option) => option.id === activeViewId
   )?.component;
 
@@ -77,6 +124,49 @@ export default function CompetitionDetailScreen() {
     label: season.name,
     value: season.id,
   })) || [];
+
+  // Get data to pass to components
+  const getComponentData = () => {
+    if (activeViewId === 'groups') {
+      // Get all groups from all group phases
+      const allGroups = selectedSeason?.phases
+        ?.filter(phase => phase.type === 'groups')
+        .flatMap(phase => phase.groups || []) || [];
+      return { groups: allGroups };
+    }
+    if (activeViewId === 'knockouts') {
+      // Get all rounds from all knockout phases
+      const allRounds = selectedSeason?.phases
+        ?.filter(phase => phase.type === 'knockout')
+        .flatMap(phase => phase.rounds || []) || [];
+      return { rounds: allRounds };
+    }
+    if (activeViewId === 'matches') {
+      if (selectedSeason?.phases) {
+        // Get all matches from all phases
+        const allMatches = selectedSeason.phases.flatMap(phase => 
+          phase.type === 'groups' 
+            ? phase.groups?.flatMap(group => group.matches) || []
+            : phase.rounds?.flatMap(round => round.matches) || []
+        );
+        return { matches: allMatches };
+      } else {
+        // Traditional matches from season
+        return { matches: selectedSeason?.matches };
+      }
+    }
+    if (activeViewId === 'standings') {
+      return { standings: selectedSeason?.standings };
+    }
+    
+    // Default data for overview and other components
+    return {
+      competition,
+      season: selectedSeason,
+      matches: selectedSeason?.matches,
+      standings: selectedSeason?.standings,
+    };
+  };
 
   return (
     <>
@@ -123,7 +213,7 @@ export default function CompetitionDetailScreen() {
           </Text>
         </View>
 
-        <View style={styles.seasonSelectContainer}>
+        <View style={styles.selectorsContainer}>
           <SeasonSelect
             seasons={seasonsForSelect}
             selectedValue={selectedSeasonId}
@@ -133,7 +223,7 @@ export default function CompetitionDetailScreen() {
         </View>
 
         <TabNavigation
-          options={VIEW_OPTIONS}
+          options={viewOptions}
           activeTabId={activeViewId}
           onTabChange={setActiveViewId}
         />
@@ -141,10 +231,7 @@ export default function CompetitionDetailScreen() {
         <View style={styles.contentContainer}>
           {ActiveViewComponent && (
             <ActiveViewComponent
-              competition={competition}
-              season={selectedSeason}
-              matches={selectedSeason?.matches}
-              standings={selectedSeason?.standings}
+              {...getComponentData()}
             />
           )}
         </View>
@@ -170,7 +257,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
     paddingHorizontal: 16,
-    paddingBottom: 42,
+    paddingBottom: 24,
   },
   imageWrapper: {
     width: 160,
@@ -193,7 +280,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 42,
+    paddingBottom: 24,
   },
   title: {
     fontSize: 24,
@@ -202,12 +289,13 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   
-  seasonSelectContainer: {
+  selectorsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingBottom: 24,
+    gap: 12,
   },
   
   contentContainer: {

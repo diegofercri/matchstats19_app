@@ -4,7 +4,7 @@ export const colors = {
   background: {
     primary: '#121212',      // Fondo principal de la app
     secondary: '#1e1e1e',    // Fondo de tarjetas y contenedores
-    tertiary: '#2a2a2a',     // Fondo de headers y elementos destacados
+    tertiary: '#404040',     // Fondo de headers y elementos destacados
     surface: '#202020',      // Fondo de elementos interactivos
   },
   

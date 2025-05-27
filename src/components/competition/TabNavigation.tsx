@@ -54,9 +54,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 4,
     paddingBottom: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
+    flexDirection: 'row',
     gap: 12,
   },
   button: {
@@ -72,6 +70,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
+    flexShrink: 0,
   },
   buttonTextActive: {
     color: colors.interactive.primaryText,

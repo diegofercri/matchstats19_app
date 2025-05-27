@@ -31,7 +31,7 @@ export interface Match {
     score: number | null;
     logo?: string;
   };
-  status: 'PROGRAMADO' | 'EN VIVO' | 'FINALIZADO' | 'POSPUESTO'; // Estados del partido
+  status: 'PROGRAMADO' | 'JUGANDO' | 'DESCANSO' | 'FINALIZADO'; // Estados del partido
   // podrías añadir: venue, referee, etc.
 }
 
@@ -53,12 +53,47 @@ export interface StandingEntry { // Entrada en la tabla de clasificación
   form?: ('G' | 'E' | 'P')[]; // Forma reciente (Ganado, Empatado, Perdido) ej: ['G', 'E', 'P', 'G', 'G']
 }
 
+// Nuevo: Grupo dentro de una fase de grupos
+export interface Group {
+  id: string;
+  name: string;        // ej: "Grupo A", "Grupo B"
+  teams: Team[];       // Equipos del grupo
+  matches: Match[];    // Partidos del grupo
+  standings: StandingEntry[]; // Clasificación del grupo
+}
+
+// Nuevo: Ronda dentro de una fase eliminatoria
+export interface KnockoutRound {
+  id: string;
+  name: string;        // ej: "Octavos de Final", "Cuartos de Final"
+  matches: Match[];    // Partidos de esta ronda
+}
+
+// Nuevo: Fase de una temporada
+export interface Phase {
+  id: string;
+  name: string;        // ej: "Fase de Grupos", "Fase Eliminatoria"
+  type: 'groups' | 'knockout'; // Tipo de fase
+  
+  // Para fases de grupos
+  groups?: Group[];
+  
+  // Para fases eliminatorias
+  rounds?: KnockoutRound[];
+}
+
 export interface Season {
   id: string;
   name: string;        // ej: "2024/2025"
   teams?: Team[];       // Lista de equipos participantes en esta temporada
+  
+  // Nuevo sistema de fases
+  phases?: Phase[];     // Fases de la temporada (grupos, eliminatorias, etc.)
+  
+  // Sistema legacy (para competiciones sin fases como LaLiga)
   matches?: Match[];    // Lista de partidos de esta temporada
-  standings?: StandingEntry[];
+  standings?: StandingEntry[]; // Clasificación general
+  
   startDate: string;
   endDate: string;
 }

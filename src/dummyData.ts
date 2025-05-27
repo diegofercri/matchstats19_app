@@ -85,6 +85,17 @@ const teamsData: { [key: string]: Team } = {
     name: "Juventus",
     logo: "https://img.sofascore.com/api/v1/team/2687/image",
   },
+  // Equipos adicionales para completar grupos
+  t_arsenal: {
+    id: "t_arsenal",
+    name: "Arsenal",
+    logo: "https://img.sofascore.com/api/v1/team/42/image",
+  },
+  t_milan: {
+    id: "t_milan",
+    name: "AC Milan",
+    logo: "https://img.sofascore.com/api/v1/team/2692/image",
+  },
 };
 
 export const dummyCompetitions: Competition[] = [
@@ -93,7 +104,7 @@ export const dummyCompetitions: Competition[] = [
     name: "LaLiga",
     image: "https://img.sofascore.com/api/v1/unique-tournament/8/image/dark",
     description: "El Mafioso de Tebas",
-    startDate: "2023-08-11", // Ajusto fechas para que tengan más sentido con las temporadas
+    startDate: "2023-08-11",
     endDate: "2024-05-26",
     seasons: [
       {
@@ -130,7 +141,7 @@ export const dummyCompetitions: Competition[] = [
             status: "PROGRAMADO",
           },
         ],
-        standings: [], // Clasificación vacía al inicio
+        standings: [],
       },
       {
         startDate: "2024-08-16",
@@ -331,7 +342,7 @@ export const dummyCompetitions: Competition[] = [
     name: "Champions League",
     image: "https://img.sofascore.com/api/v1/unique-tournament/7/image/dark",
     description: "Ceferin Cup",
-    startDate: "2023-09-19", // Ajusto fechas
+    startDate: "2023-09-19",
     endDate: "2024-06-01",
     seasons: [
       {
@@ -347,30 +358,100 @@ export const dummyCompetitions: Competition[] = [
           teamsData["t8"],
           teamsData["t_liv"],
           teamsData["t_juv"],
+          teamsData["t_arsenal"],
         ],
-        matches: [
+        phases: [
           {
-            id: "ucl_2526_m1",
-            date: "2025-09-16",
-            time: "21:00",
-            round: "Fase de Grupos - J1",
-            homeTeam: {
-              id: teamsData["t5"].id,
-              name: teamsData["t5"].name,
-              logo: teamsData["t5"].logo,
-              score: null,
-            },
-            awayTeam: {
-              id: teamsData["t6"].id,
-              name: teamsData["t6"].name,
-              logo: teamsData["t6"].logo,
-              score: null,
-            },
-            status: "PROGRAMADO",
+            id: "ucl_2526_groups",
+            name: "Fase de Grupos",
+            type: "groups",
+            groups: [
+              {
+                id: "group_a",
+                name: "Grupo A",
+                teams: [teamsData["t1"], teamsData["t5"]],
+                matches: [
+                  {
+                    id: "ucl_2526_ga_m1",
+                    date: "2025-09-16",
+                    time: "21:00",
+                    round: "J1",
+                    homeTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: null,
+                    },
+                    awayTeam: {
+                      id: teamsData["t5"].id,
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: null,
+                    },
+                    status: "PROGRAMADO",
+                  },
+                ],
+                standings: [],
+              },
+              {
+                id: "group_b",
+                name: "Grupo B",
+                teams: [teamsData["t6"], teamsData["t7"]],
+                matches: [
+                  {
+                    id: "ucl_2526_gb_m1",
+                    date: "2025-09-17",
+                    time: "21:00",
+                    round: "J1",
+                    homeTeam: {
+                      id: teamsData["t6"].id,
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: null,
+                    },
+                    awayTeam: {
+                      id: teamsData["t7"].id,
+                      name: teamsData["t7"].name,
+                      logo: teamsData["t7"].logo,
+                      score: null,
+                    },
+                    status: "PROGRAMADO",
+                  },
+                ],
+                standings: [],
+              },
+            ],
+          },
+          {
+            id: "ucl_2526_knockout",
+            name: "Fase Eliminatoria",
+            type: "knockout",
+            rounds: [
+              {
+                id: "round_16",
+                name: "Octavos de Final",
+                matches: [],
+              },
+              {
+                id: "quarter_finals",
+                name: "Cuartos de Final",
+                matches: [],
+              },
+              {
+                id: "semi_finals",
+                name: "Semifinales",
+                matches: [],
+              },
+              {
+                id: "final",
+                name: "Final",
+                matches: [],
+              },
+            ],
           },
         ],
-        // Standings en UCL son por grupo, aquí simplificado o mostrando una "clasificación general" teórica
-        standings: [],
+        matches: [], // Deprecated - now in phases
+        standings: [], // Deprecated - now in phases
       },
       {
         startDate: "2024-09-17",
@@ -385,48 +466,134 @@ export const dummyCompetitions: Competition[] = [
           teamsData["t8"],
           teamsData["t_liv"],
         ],
-        matches: [
+        phases: [
           {
-            id: "ucl_2425_final",
-            date: "2025-05-31",
-            time: "21:00",
-            round: "Final",
-            homeTeam: {
-              id: teamsData["t1"].id,
-              name: teamsData["t1"].name,
-              logo: teamsData["t1"].logo,
-              score: 2,
-            },
-            awayTeam: {
-              id: teamsData["t5"].id,
-              name: teamsData["t5"].name,
-              logo: teamsData["t5"].logo,
-              score: 1,
-            },
-            status: "FINALIZADO",
+            id: "ucl_2425_groups",
+            name: "Fase de Grupos",
+            type: "groups",
+            groups: [
+              {
+                id: "group_a_2425",
+                name: "Grupo A",
+                teams: [teamsData["t1"], teamsData["t5"]],
+                matches: [
+                  {
+                    id: "ucl_2425_ga_m1",
+                    date: "2024-09-17",
+                    time: "21:00",
+                    round: "J6",
+                    homeTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t5"].id,
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+                standings: [
+                  {
+                    position: 1,
+                    team: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                    },
+                    played: 6,
+                    won: 4,
+                    drawn: 1,
+                    lost: 1,
+                    goalsFor: 12,
+                    goalsAgainst: 6,
+                    goalDifference: 6,
+                    points: 13,
+                  },
+                  {
+                    position: 2,
+                    team: {
+                      id: teamsData["t5"].id,
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                    },
+                    played: 6,
+                    won: 3,
+                    drawn: 2,
+                    lost: 1,
+                    goalsFor: 10,
+                    goalsAgainst: 8,
+                    goalDifference: 2,
+                    points: 11,
+                  },
+                ],
+              },
+            ],
           },
           {
-            id: "ucl_2425_sf1",
-            date: "2025-05-07",
-            time: "21:00",
-            round: "Semifinal",
-            homeTeam: {
-              id: teamsData["t6"].id,
-              name: teamsData["t6"].name,
-              logo: teamsData["t6"].logo,
-              score: 0,
-            },
-            awayTeam: {
-              id: teamsData["t1"].id,
-              name: teamsData["t1"].name,
-              logo: teamsData["t1"].logo,
-              score: 1,
-            },
-            status: "FINALIZADO",
+            id: "ucl_2425_knockout",
+            name: "Fase Eliminatoria",
+            type: "knockout",
+            rounds: [
+              {
+                id: "semi_finals_2425",
+                name: "Semifinales",
+                matches: [
+                  {
+                    id: "ucl_2425_sf1",
+                    date: "2025-05-07",
+                    time: "21:00",
+                    round: "Semifinal - Ida",
+                    homeTeam: {
+                      id: teamsData["t6"].id,
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: 0,
+                    },
+                    awayTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+              },
+              {
+                id: "final_2425",
+                name: "Final",
+                matches: [
+                  {
+                    id: "ucl_2425_final",
+                    date: "2025-05-31",
+                    time: "21:00",
+                    round: "Final",
+                    homeTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t5"].id,
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+              },
+            ],
           },
         ],
-        // Para fases finales de torneos de copa, una tabla de clasificación tradicional no aplica.
-        standings: [],
+        matches: [], // Deprecated
+        standings: [], // Deprecated
       },
     ],
     defaultSeasonId: "ucl-s2024-25",
@@ -436,7 +603,7 @@ export const dummyCompetitions: Competition[] = [
     name: "Copa del Rey",
     image: "https://img.sofascore.com/api/v1/unique-tournament/329/image/dark",
     description: "Nos Gusta el Jamón",
-    startDate: "2023-11-01", // Ajusto fechas
+    startDate: "2023-11-01",
     endDate: "2024-04-06",
     seasons: [
       {
@@ -449,50 +616,93 @@ export const dummyCompetitions: Competition[] = [
           teamsData["t2"],
           teamsData["t3"],
           teamsData["t4"],
-        ], // Equipos que suelen llegar lejos
-        matches: [
+        ],
+        phases: [
           {
-            id: "cdr_2425_final",
-            date: "2025-04-26",
-            time: "22:00",
-            round: "Final",
-            homeTeam: {
-              id: teamsData["t2"].id,
-              name: teamsData["t2"].name,
-              logo: teamsData["t2"].logo,
-              score: 2,
-            },
-            awayTeam: {
-              id: teamsData["t3"].id,
-              name: teamsData["t3"].name,
-              logo: teamsData["t3"].logo,
-              score: 1,
-            },
-            status: "FINALIZADO",
-          },
-          {
-            id: "cdr_2425_sf",
-            date: "2025-04-02",
-            time: "21:00",
-            round: "Semifinal",
-            homeTeam: {
-              id: teamsData["t1"].id,
-              name: teamsData["t1"].name,
-              logo: teamsData["t1"].logo,
-              score: 0,
-            },
-            awayTeam: {
-              id: teamsData["t2"].id,
-              name: teamsData["t2"].name,
-              logo: teamsData["t2"].logo,
-              score: 1,
-            },
-            status: "FINALIZADO",
+            id: "cdr_2425_knockout",
+            name: "Fase Eliminatoria",
+            type: "knockout",
+            rounds: [
+              {
+                id: "cdr_quarterfinals",
+                name: "Cuartos de Final",
+                matches: [
+                  {
+                    id: "cdr_2425_qf1",
+                    date: "2025-03-05",
+                    time: "21:00",
+                    round: "Cuartos - Ida",
+                    homeTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t4"].id,
+                      name: teamsData["t4"].name,
+                      logo: teamsData["t4"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+              },
+              {
+                id: "cdr_semifinals",
+                name: "Semifinales",
+                matches: [
+                  {
+                    id: "cdr_2425_sf",
+                    date: "2025-04-02",
+                    time: "21:00",
+                    round: "Semifinal",
+                    homeTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 0,
+                    },
+                    awayTeam: {
+                      id: teamsData["t2"].id,
+                      name: teamsData["t2"].name,
+                      logo: teamsData["t2"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+              },
+              {
+                id: "cdr_final",
+                name: "Final",
+                matches: [
+                  {
+                    id: "cdr_2425_final",
+                    date: "2025-04-26",
+                    time: "22:00",
+                    round: "Final",
+                    homeTeam: {
+                      id: teamsData["t2"].id,
+                      name: teamsData["t2"].name,
+                      logo: teamsData["t2"].logo,
+                      score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t3"].id,
+                      name: teamsData["t3"].name,
+                      logo: teamsData["t3"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+              },
+            ],
           },
         ],
-        // Para la Copa, una tabla de clasificación completa no es común.
-        // Se usa un array vacío para cumplir con el tipo StandingEntry[].
-        standings: [],
+        matches: [], // Deprecated
+        standings: [], // Deprecated
       },
       {
         startDate: "2023-11-01",
@@ -505,28 +715,42 @@ export const dummyCompetitions: Competition[] = [
           teamsData["t_rsoc"],
           teamsData["t_val"],
         ],
-        matches: [
+        phases: [
           {
-            id: "cdr_2324_final",
-            date: "2024-04-06",
-            time: "22:00",
-            round: "Final",
-            homeTeam: {
-              id: teamsData["t_val"].id,
-              name: teamsData["t_val"].name,
-              logo: teamsData["t_val"].logo,
-              score: 1,
-            },
-            awayTeam: {
-              id: teamsData["t_rsoc"].id,
-              name: teamsData["t_rsoc"].name,
-              logo: teamsData["t_rsoc"].logo,
-              score: 2,
-            },
-            status: "FINALIZADO",
+            id: "cdr_2324_knockout",
+            name: "Fase Eliminatoria",
+            type: "knockout",
+            rounds: [
+              {
+                id: "cdr_final_2324",
+                name: "Final",
+                matches: [
+                  {
+                    id: "cdr_2324_final",
+                    date: "2024-04-06",
+                    time: "22:00",
+                    round: "Final",
+                    homeTeam: {
+                      id: teamsData["t_val"].id,
+                      name: teamsData["t_val"].name,
+                      logo: teamsData["t_val"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t_rsoc"].id,
+                      name: teamsData["t_rsoc"].name,
+                      logo: teamsData["t_rsoc"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+              },
+            ],
           },
         ],
-        standings: [],
+        matches: [], // Deprecated
+        standings: [], // Deprecated
       },
     ],
     defaultSeasonId: "cdr-s2024-25",

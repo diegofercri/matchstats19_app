@@ -18,7 +18,7 @@ const Standings = ({ standings }: StandingsProps) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       {/* Encabezado de la tabla */}
       <View style={styles.header}>
         <Text style={styles.headerPosition}>#</Text>
@@ -51,9 +51,6 @@ const Standings = ({ standings }: StandingsProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // Container principal sin fondo ni bordes
-  },
   emptyContainer: {
     padding: 16,
     backgroundColor: colors.background.secondary,
