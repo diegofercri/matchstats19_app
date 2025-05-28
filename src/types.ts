@@ -1,4 +1,4 @@
-// En tu archivo types.ts (o similar)
+// types.ts
 
 export interface User {
   id: string;

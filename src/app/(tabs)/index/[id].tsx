@@ -1,5 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, Image, ScrollView, Pressable, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+} from "react-native";
 import {
   Stack,
   useLocalSearchParams,
@@ -12,20 +19,26 @@ import Matches from "@/components/competition/Matches";
 import Standings from "@/components/competition/Standigns";
 import Groups from "@/components/competition/Groups";
 import Knockouts from "@/components/competition/Knockouts";
+import KnockoutBrackets from "@/components/competition/KnockoutBrackets";
 import SeasonSelect from "@/components/competition/SeasonSelect";
-import TabNavigation, { TabOption } from "@/components/competition/TabNavigation";
+import KnockoutViewSelect, {
+  KnockoutViewType,
+} from "@/components/competition/KnockoutSelect";
+import TabNavigation, {
+  TabOption,
+} from "@/components/ui/TabNavigation";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from '@colors';
-import { Phase, Season } from '@/types';
+import { colors } from "@colors";
 
 export default function CompetitionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const competition = dummyCompetitions.find((comp) => comp.id === id);
 
-  const [activeViewId, setActiveViewId] = useState<string>("matches");
+  const [activeViewId, setActiveViewId] = useState<string>("");
   const [selectedSeasonId, setSelectedSeasonId] = useState<string | undefined>(
     undefined
   );
+  const [knockoutView, setKnockoutView] = useState<KnockoutViewType>("list");
 
   useEffect(() => {
     if (competition) {
@@ -33,11 +46,13 @@ export default function CompetitionDetailScreen() {
         (s) => s.id === selectedSeasonId
       );
       if (!currentSeasonStillValid) {
-        const newSeasonId = competition.defaultSeasonId || competition.seasons?.[0]?.id;
+        const newSeasonId =
+          competition.defaultSeasonId || competition.seasons?.[0]?.id;
         setSelectedSeasonId(newSeasonId);
       }
     } else {
       setSelectedSeasonId(undefined);
+      setActiveViewId("");
     }
   }, [competition]);
 
@@ -50,9 +65,7 @@ export default function CompetitionDetailScreen() {
   if (!competition) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>
-          Competición no encontrada.
-        </Text>
+        <Text style={styles.errorText}>Competición no encontrada.</Text>
       </View>
     );
   }
@@ -63,45 +76,75 @@ export default function CompetitionDetailScreen() {
 
   const handleSeasonChange = (seasonId: string) => {
     setSelectedSeasonId(seasonId);
+    // Reset knockout view when season changes
+    setKnockoutView("list");
   };
+
+  const handleKnockoutViewChange = (view: KnockoutViewType) => {
+    setKnockoutView(view);
+  };
+
+  // Check if current season has knockout phase
+  const hasKnockoutPhase = selectedSeason?.phases?.some(
+    (phase) => phase.type === "knockout"
+  );
 
   // Generate dynamic tab options based on selected season
   const getViewOptions = (): TabOption[] => {
     const options: TabOption[] = [];
 
+    // PARTIDOS - Always first for all competitions
     if (selectedSeason?.phases) {
-      // Competition has phases - show all available phase types as tabs
-      const hasGroups = selectedSeason.phases.some(phase => phase.type === 'groups');
-      const hasKnockouts = selectedSeason.phases.some(phase => phase.type === 'knockout');
-      
+      // Get all matches from all phases
+      const allMatches = selectedSeason.phases.flatMap((phase) =>
+        phase.type === "groups"
+          ? phase.groups?.flatMap((group) => group.matches) || []
+          : phase.rounds?.flatMap((round) => round.matches) || []
+      );
+
+      if (allMatches.length > 0) {
+        options.push({ id: "matches", label: "Partidos", component: Matches });
+      }
+    } else if (selectedSeason?.matches && selectedSeason.matches.length > 0) {
+      options.push({ id: "matches", label: "Partidos", component: Matches });
+    }
+
+    // SECOND - Competition-specific options
+    if (selectedSeason?.phases) {
+      // Competition has phases - show phase types as tabs
+      const hasGroups = selectedSeason.phases.some(
+        (phase) => phase.type === "groups"
+      );
+      const hasKnockouts = selectedSeason.phases.some(
+        (phase) => phase.type === "knockout"
+      );
+
       if (hasGroups) {
         options.push({ id: "groups", label: "Grupos", component: Groups });
       }
       if (hasKnockouts) {
-        options.push({ id: "knockouts", label: "Eliminatorias", component: Knockouts });
+        // Use the appropriate knockout component based on selected view
+        const KnockoutComponent =
+          knockoutView === "brackets" ? KnockoutBrackets : Knockouts;
+        options.push({
+          id: "knockouts",
+          label: "Eliminatorias",
+          component: KnockoutComponent,
+        });
       }
-      
-      // Get all matches from all phases
-      const allMatches = selectedSeason.phases.flatMap(phase => 
-        phase.type === 'groups' 
-          ? phase.groups?.flatMap(group => group.matches) || []
-          : phase.rounds?.flatMap(round => round.matches) || []
-      );
-      
-      if (allMatches.length > 0) {
-        options.push({ id: "matches", label: "Partidos", component: Matches });
-      }
-    } else if (selectedSeason) {
+    } else if (
+      selectedSeason?.standings &&
+      selectedSeason.standings.length > 0
+    ) {
       // Traditional season structure (like LaLiga)
-      if (selectedSeason.standings && selectedSeason.standings.length > 0) {
-        options.push({ id: "standings", label: "Clasificación", component: Standings });
-      }
-      if (selectedSeason.matches && selectedSeason.matches.length > 0) {
-        options.push({ id: "matches", label: "Partidos", component: Matches });
-      }
+      options.push({
+        id: "standings",
+        label: "Clasificación",
+        component: Standings,
+      });
     }
 
-    // Information is always available
+    // INFORMACIÓN - Always last
     options.push({ id: "overview", label: "Información", component: Overview });
 
     return options;
@@ -111,7 +154,10 @@ export default function CompetitionDetailScreen() {
 
   // Ensure active view is valid for current options
   useEffect(() => {
-    if (viewOptions.length > 0 && !viewOptions.find(opt => opt.id === activeViewId)) {
+    if (
+      viewOptions.length > 0 &&
+      !viewOptions.find((opt) => opt.id === activeViewId)
+    ) {
       setActiveViewId(viewOptions[0].id);
     }
   }, [viewOptions, activeViewId]);
@@ -120,34 +166,37 @@ export default function CompetitionDetailScreen() {
     (option) => option.id === activeViewId
   )?.component;
 
-  const seasonsForSelect = competition?.seasons?.map(season => ({
-    label: season.name,
-    value: season.id,
-  })) || [];
+  const seasonsForSelect =
+    competition?.seasons?.map((season) => ({
+      label: season.name,
+      value: season.id,
+    })) || [];
 
   // Get data to pass to components
   const getComponentData = () => {
-    if (activeViewId === 'groups') {
+    if (activeViewId === "groups") {
       // Get all groups from all group phases
-      const allGroups = selectedSeason?.phases
-        ?.filter(phase => phase.type === 'groups')
-        .flatMap(phase => phase.groups || []) || [];
+      const allGroups =
+        selectedSeason?.phases
+          ?.filter((phase) => phase.type === "groups")
+          .flatMap((phase) => phase.groups || []) || [];
       return { groups: allGroups };
     }
-    if (activeViewId === 'knockouts') {
+    if (activeViewId === "knockouts") {
       // Get all rounds from all knockout phases
-      const allRounds = selectedSeason?.phases
-        ?.filter(phase => phase.type === 'knockout')
-        .flatMap(phase => phase.rounds || []) || [];
+      const allRounds =
+        selectedSeason?.phases
+          ?.filter((phase) => phase.type === "knockout")
+          .flatMap((phase) => phase.rounds || []) || [];
       return { rounds: allRounds };
     }
-    if (activeViewId === 'matches') {
+    if (activeViewId === "matches") {
       if (selectedSeason?.phases) {
         // Get all matches from all phases
-        const allMatches = selectedSeason.phases.flatMap(phase => 
-          phase.type === 'groups' 
-            ? phase.groups?.flatMap(group => group.matches) || []
-            : phase.rounds?.flatMap(round => round.matches) || []
+        const allMatches = selectedSeason.phases.flatMap((phase) =>
+          phase.type === "groups"
+            ? phase.groups?.flatMap((group) => group.matches) || []
+            : phase.rounds?.flatMap((round) => round.matches) || []
         );
         return { matches: allMatches };
       } else {
@@ -155,10 +204,10 @@ export default function CompetitionDetailScreen() {
         return { matches: selectedSeason?.matches };
       }
     }
-    if (activeViewId === 'standings') {
+    if (activeViewId === "standings") {
       return { standings: selectedSeason?.standings };
     }
-    
+
     // Default data for overview and other components
     return {
       competition,
@@ -180,23 +229,14 @@ export default function CompetitionDetailScreen() {
               return null;
             }
             return (
-              <Pressable
-                onPress={() => router.back()}
-              >
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color={tintColor}
-                />
+              <Pressable onPress={() => router.back()}>
+                <Ionicons name="chevron-back" size={24} color={tintColor} />
               </Pressable>
             );
           },
         }}
       />
-      <ScrollView 
-        style={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.imageContainer}>
           <View style={styles.imageWrapper}>
             <Image
@@ -208,9 +248,7 @@ export default function CompetitionDetailScreen() {
         </View>
 
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>
-            {competition.name}
-          </Text>
+          <Text style={styles.title}>{competition.name}</Text>
         </View>
 
         <View style={styles.selectorsContainer}>
@@ -220,6 +258,14 @@ export default function CompetitionDetailScreen() {
             onValueChange={handleSeasonChange}
             placeholder="Temporada"
           />
+
+          {/* Only show knockout view selector if season has knockout phase */}
+          {hasKnockoutPhase && (
+            <KnockoutViewSelect
+              selectedView={knockoutView}
+              onViewChange={handleKnockoutViewChange}
+            />
+          )}
         </View>
 
         <TabNavigation
@@ -230,9 +276,7 @@ export default function CompetitionDetailScreen() {
 
         <View style={styles.contentContainer}>
           {ActiveViewComponent && (
-            <ActiveViewComponent
-              {...getComponentData()}
-            />
+            <ActiveViewComponent {...getComponentData()} />
           )}
         </View>
       </ScrollView>
@@ -247,14 +291,14 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 16,
     backgroundColor: colors.background.primary,
   },
-  
+
   imageContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 24,
     paddingHorizontal: 16,
     paddingBottom: 24,
@@ -264,16 +308,16 @@ const styles = StyleSheet.create({
     height: 160,
     borderRadius: 16,
     backgroundColor: colors.background.secondary,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
-  
+
   errorText: {
     fontSize: 18,
     color: colors.text.primary,
@@ -284,20 +328,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     color: colors.text.primary,
   },
-  
+
   selectorsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingBottom: 10,
+    paddingTop: 10,
     gap: 12,
   },
-  
+
   contentContainer: {
     paddingTop: 24,
     paddingHorizontal: 16,

@@ -61,6 +61,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 9999,
+    minWidth: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonActive: {
     backgroundColor: colors.interactive.primary,
@@ -70,15 +73,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
-    flexShrink: 0,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   buttonTextActive: {
     color: colors.interactive.primaryText,
-    fontWeight: '600',
   },
   buttonTextInactive: {
     color: colors.text.muted,
-    fontWeight: '500',
   },
 });
 

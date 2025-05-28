@@ -1,4 +1,13 @@
-import { User, Competition, Season, Team, Match, StandingEntry } from "./types";
+// dummyData.ts
+import {
+  User,
+  Competition,
+  Season,
+  Team,
+  Match,
+  StandingEntry,
+  KnockoutRound,
+} from "@/types";
 
 export const dummyUsers: User[] = [
   {
@@ -337,6 +346,9 @@ export const dummyCompetitions: Competition[] = [
     ],
     defaultSeasonId: "laliga-s2024-25",
   },
+  // Champions League coherent data - Add this to your dummyData.ts
+
+  // Update the Champions League competition in dummyCompetitions array:
   {
     id: "2",
     name: "Champions League",
@@ -345,126 +357,21 @@ export const dummyCompetitions: Competition[] = [
     startDate: "2023-09-19",
     endDate: "2024-06-01",
     seasons: [
-      {
-        id: "ucl-s2025-26",
-        name: "2025/2026",
-        startDate: "2025-09-16",
-        endDate: "2026-05-30",
-        teams: [
-          teamsData["t1"],
-          teamsData["t5"],
-          teamsData["t6"],
-          teamsData["t7"],
-          teamsData["t8"],
-          teamsData["t_liv"],
-          teamsData["t_juv"],
-          teamsData["t_arsenal"],
-        ],
-        phases: [
-          {
-            id: "ucl_2526_groups",
-            name: "Fase de Grupos",
-            type: "groups",
-            groups: [
-              {
-                id: "group_a",
-                name: "Grupo A",
-                teams: [teamsData["t1"], teamsData["t5"]],
-                matches: [
-                  {
-                    id: "ucl_2526_ga_m1",
-                    date: "2025-09-16",
-                    time: "21:00",
-                    round: "J1",
-                    homeTeam: {
-                      id: teamsData["t1"].id,
-                      name: teamsData["t1"].name,
-                      logo: teamsData["t1"].logo,
-                      score: null,
-                    },
-                    awayTeam: {
-                      id: teamsData["t5"].id,
-                      name: teamsData["t5"].name,
-                      logo: teamsData["t5"].logo,
-                      score: null,
-                    },
-                    status: "PROGRAMADO",
-                  },
-                ],
-                standings: [],
-              },
-              {
-                id: "group_b",
-                name: "Grupo B",
-                teams: [teamsData["t6"], teamsData["t7"]],
-                matches: [
-                  {
-                    id: "ucl_2526_gb_m1",
-                    date: "2025-09-17",
-                    time: "21:00",
-                    round: "J1",
-                    homeTeam: {
-                      id: teamsData["t6"].id,
-                      name: teamsData["t6"].name,
-                      logo: teamsData["t6"].logo,
-                      score: null,
-                    },
-                    awayTeam: {
-                      id: teamsData["t7"].id,
-                      name: teamsData["t7"].name,
-                      logo: teamsData["t7"].logo,
-                      score: null,
-                    },
-                    status: "PROGRAMADO",
-                  },
-                ],
-                standings: [],
-              },
-            ],
-          },
-          {
-            id: "ucl_2526_knockout",
-            name: "Fase Eliminatoria",
-            type: "knockout",
-            rounds: [
-              {
-                id: "round_16",
-                name: "Octavos de Final",
-                matches: [],
-              },
-              {
-                id: "quarter_finals",
-                name: "Cuartos de Final",
-                matches: [],
-              },
-              {
-                id: "semi_finals",
-                name: "Semifinales",
-                matches: [],
-              },
-              {
-                id: "final",
-                name: "Final",
-                matches: [],
-              },
-            ],
-          },
-        ],
-        matches: [], // Deprecated - now in phases
-        standings: [], // Deprecated - now in phases
-      },
+      // 2024/2025 Season with coherent data
       {
         startDate: "2024-09-17",
         endDate: "2025-05-31",
         id: "ucl-s2024-25",
         name: "2024/2025",
         teams: [
-          teamsData["t1"],
-          teamsData["t5"],
-          teamsData["t6"],
-          teamsData["t7"],
-          teamsData["t8"],
-          teamsData["t_liv"],
+          teamsData["t1"], // Real Madrid
+          teamsData["t5"], // Manchester City
+          teamsData["t6"], // Bayern München
+          teamsData["t7"], // Paris Saint-Germain
+          teamsData["t8"], // Inter
+          teamsData["t_liv"], // Liverpool
+          teamsData["t_juv"], // Juventus
+          teamsData["t_arsenal"], // Arsenal
         ],
         phases: [
           {
@@ -475,18 +382,63 @@ export const dummyCompetitions: Competition[] = [
               {
                 id: "group_a_2425",
                 name: "Grupo A",
-                teams: [teamsData["t1"], teamsData["t5"]],
+                teams: [
+                  teamsData["t1"], // Real Madrid
+                  teamsData["t5"], // Manchester City
+                  teamsData["t8"], // Inter
+                  teamsData["t_juv"], // Juventus
+                ],
                 matches: [
+                  // Jornada 1
                   {
                     id: "ucl_2425_ga_m1",
                     date: "2024-09-17",
                     time: "21:00",
-                    round: "J6",
+                    round: "J1",
                     homeTeam: {
                       id: teamsData["t1"].id,
                       name: teamsData["t1"].name,
                       logo: teamsData["t1"].logo,
                       score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t8"].id,
+                      name: teamsData["t8"].name,
+                      logo: teamsData["t8"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  {
+                    id: "ucl_2425_ga_m2",
+                    date: "2024-09-18",
+                    time: "21:00",
+                    round: "J1",
+                    homeTeam: {
+                      id: teamsData["t5"].id,
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: 3,
+                    },
+                    awayTeam: {
+                      id: teamsData["t_juv"].id,
+                      name: teamsData["t_juv"].name,
+                      logo: teamsData["t_juv"].logo,
+                      score: 0,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Jornada 2
+                  {
+                    id: "ucl_2425_ga_m3",
+                    date: "2024-10-01",
+                    time: "21:00",
+                    round: "J2",
+                    homeTeam: {
+                      id: teamsData["t8"].id,
+                      name: teamsData["t8"].name,
+                      logo: teamsData["t8"].logo,
+                      score: 1,
                     },
                     awayTeam: {
                       id: teamsData["t5"].id,
@@ -496,39 +448,332 @@ export const dummyCompetitions: Competition[] = [
                     },
                     status: "FINALIZADO",
                   },
+                  {
+                    id: "ucl_2425_ga_m4",
+                    date: "2024-10-02",
+                    time: "21:00",
+                    round: "J2",
+                    homeTeam: {
+                      id: teamsData["t_juv"].id,
+                      name: teamsData["t_juv"].name,
+                      logo: teamsData["t_juv"].logo,
+                      score: 0,
+                    },
+                    awayTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 3,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Jornada 3
+                  {
+                    id: "ucl_2425_ga_m5",
+                    date: "2024-10-22",
+                    time: "21:00",
+                    round: "J3",
+                    homeTeam: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t5"].id,
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  {
+                    id: "ucl_2425_ga_m6",
+                    date: "2024-10-23",
+                    time: "21:00",
+                    round: "J3",
+                    homeTeam: {
+                      id: teamsData["t_juv"].id,
+                      name: teamsData["t_juv"].name,
+                      logo: teamsData["t_juv"].logo,
+                      score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t8"].id,
+                      name: teamsData["t8"].name,
+                      logo: teamsData["t8"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
                 ],
                 standings: [
                   {
                     position: 1,
                     team: {
-                      id: teamsData["t1"].id,
-                      name: teamsData["t1"].name,
-                      logo: teamsData["t1"].logo,
-                    },
-                    played: 6,
-                    won: 4,
-                    drawn: 1,
-                    lost: 1,
-                    goalsFor: 12,
-                    goalsAgainst: 6,
-                    goalDifference: 6,
-                    points: 13,
-                  },
-                  {
-                    position: 2,
-                    team: {
                       id: teamsData["t5"].id,
                       name: teamsData["t5"].name,
                       logo: teamsData["t5"].logo,
                     },
-                    played: 6,
-                    won: 3,
+                    played: 3,
+                    won: 2,
+                    drawn: 1,
+                    lost: 0,
+                    goalsFor: 6,
+                    goalsAgainst: 2,
+                    goalDifference: 4,
+                    points: 7,
+                    form: ["G", "E", "G"],
+                  },
+                  {
+                    position: 2,
+                    team: {
+                      id: teamsData["t1"].id,
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                    },
+                    played: 3,
+                    won: 2,
+                    drawn: 0,
+                    lost: 1,
+                    goalsFor: 6,
+                    goalsAgainst: 3,
+                    goalDifference: 3,
+                    points: 6,
+                    form: ["G", "G", "P"],
+                  },
+                  {
+                    position: 3,
+                    team: {
+                      id: teamsData["t8"].id,
+                      name: teamsData["t8"].name,
+                      logo: teamsData["t8"].logo,
+                    },
+                    played: 3,
+                    won: 0,
                     drawn: 2,
                     lost: 1,
-                    goalsFor: 10,
+                    goalsFor: 4,
+                    goalsAgainst: 5,
+                    goalDifference: -1,
+                    points: 2,
+                    form: ["P", "E", "E"],
+                  },
+                  {
+                    position: 4,
+                    team: {
+                      id: teamsData["t_juv"].id,
+                      name: teamsData["t_juv"].name,
+                      logo: teamsData["t_juv"].logo,
+                    },
+                    played: 3,
+                    won: 0,
+                    drawn: 1,
+                    lost: 2,
+                    goalsFor: 2,
                     goalsAgainst: 8,
-                    goalDifference: 2,
-                    points: 11,
+                    goalDifference: -6,
+                    points: 1,
+                    form: ["P", "P", "E"],
+                  },
+                ],
+              },
+              {
+                id: "group_b_2425",
+                name: "Grupo B",
+                teams: [
+                  teamsData["t6"], // Bayern München
+                  teamsData["t7"], // Paris Saint-Germain
+                  teamsData["t_liv"], // Liverpool
+                  teamsData["t_arsenal"], // Arsenal
+                ],
+                matches: [
+                  // Jornada 1
+                  {
+                    id: "ucl_2425_gb_m1",
+                    date: "2024-09-17",
+                    time: "21:00",
+                    round: "J1",
+                    homeTeam: {
+                      id: teamsData["t6"].id,
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t_arsenal"].id,
+                      name: teamsData["t_arsenal"].name,
+                      logo: teamsData["t_arsenal"].logo,
+                      score: 0,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  {
+                    id: "ucl_2425_gb_m2",
+                    date: "2024-09-18",
+                    time: "21:00",
+                    round: "J1",
+                    homeTeam: {
+                      id: teamsData["t7"].id,
+                      name: teamsData["t7"].name,
+                      logo: teamsData["t7"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t_liv"].id,
+                      name: teamsData["t_liv"].name,
+                      logo: teamsData["t_liv"].logo,
+                      score: 3,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Jornada 2
+                  {
+                    id: "ucl_2425_gb_m3",
+                    date: "2024-10-01",
+                    time: "21:00",
+                    round: "J2",
+                    homeTeam: {
+                      id: teamsData["t_arsenal"].id,
+                      name: teamsData["t_arsenal"].name,
+                      logo: teamsData["t_arsenal"].logo,
+                      score: 2,
+                    },
+                    awayTeam: {
+                      id: teamsData["t7"].id,
+                      name: teamsData["t7"].name,
+                      logo: teamsData["t7"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  {
+                    id: "ucl_2425_gb_m4",
+                    date: "2024-10-02",
+                    time: "21:00",
+                    round: "J2",
+                    homeTeam: {
+                      id: teamsData["t_liv"].id,
+                      name: teamsData["t_liv"].name,
+                      logo: teamsData["t_liv"].logo,
+                      score: 0,
+                    },
+                    awayTeam: {
+                      id: teamsData["t6"].id,
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Jornada 3
+                  {
+                    id: "ucl_2425_gb_m5",
+                    date: "2024-10-22",
+                    time: "21:00",
+                    round: "J3",
+                    homeTeam: {
+                      id: teamsData["t6"].id,
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: 3,
+                    },
+                    awayTeam: {
+                      id: teamsData["t7"].id,
+                      name: teamsData["t7"].name,
+                      logo: teamsData["t7"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  {
+                    id: "ucl_2425_gb_m6",
+                    date: "2024-10-23",
+                    time: "21:00",
+                    round: "J3",
+                    homeTeam: {
+                      id: teamsData["t_arsenal"].id,
+                      name: teamsData["t_arsenal"].name,
+                      logo: teamsData["t_arsenal"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t_liv"].id,
+                      name: teamsData["t_liv"].name,
+                      logo: teamsData["t_liv"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
+                ],
+                standings: [
+                  {
+                    position: 1,
+                    team: {
+                      id: teamsData["t6"].id,
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                    },
+                    played: 3,
+                    won: 3,
+                    drawn: 0,
+                    lost: 0,
+                    goalsFor: 6,
+                    goalsAgainst: 1,
+                    goalDifference: 5,
+                    points: 9,
+                    form: ["G", "G", "G"],
+                  },
+                  {
+                    position: 2,
+                    team: {
+                      id: teamsData["t_liv"].id,
+                      name: teamsData["t_liv"].name,
+                      logo: teamsData["t_liv"].logo,
+                    },
+                    played: 3,
+                    won: 2,
+                    drawn: 0,
+                    lost: 1,
+                    goalsFor: 5,
+                    goalsAgainst: 2,
+                    goalDifference: 3,
+                    points: 6,
+                    form: ["G", "P", "G"],
+                  },
+                  {
+                    position: 3,
+                    team: {
+                      id: teamsData["t7"].id,
+                      name: teamsData["t7"].name,
+                      logo: teamsData["t7"].logo,
+                    },
+                    played: 3,
+                    won: 0,
+                    drawn: 1,
+                    lost: 2,
+                    goalsFor: 4,
+                    goalsAgainst: 6,
+                    goalDifference: -2,
+                    points: 1,
+                    form: ["P", "E", "P"],
+                  },
+                  {
+                    position: 4,
+                    team: {
+                      id: teamsData["t_arsenal"].id,
+                      name: teamsData["t_arsenal"].name,
+                      logo: teamsData["t_arsenal"].logo,
+                    },
+                    played: 3,
+                    won: 0,
+                    drawn: 1,
+                    lost: 2,
+                    goalsFor: 3,
+                    goalsAgainst: 9,
+                    goalDifference: -6,
+                    points: 1,
+                    form: ["P", "E", "P"],
                   },
                 ],
               },
@@ -543,22 +788,83 @@ export const dummyCompetitions: Competition[] = [
                 id: "semi_finals_2425",
                 name: "Semifinales",
                 matches: [
+                  // Semifinal 1 - Ida
                   {
-                    id: "ucl_2425_sf1",
-                    date: "2025-05-07",
+                    id: "ucl_2425_sf1_ida",
+                    date: "2025-04-29",
                     time: "21:00",
                     round: "Semifinal - Ida",
                     homeTeam: {
-                      id: teamsData["t6"].id,
-                      name: teamsData["t6"].name,
-                      logo: teamsData["t6"].logo,
-                      score: 0,
+                      id: teamsData["t5"].id, // Manchester City (1° Grupo A)
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: 2,
                     },
                     awayTeam: {
-                      id: teamsData["t1"].id,
+                      id: teamsData["t_liv"].id, // Liverpool (2° Grupo B)
+                      name: teamsData["t_liv"].name,
+                      logo: teamsData["t_liv"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Semifinal 1 - Vuelta
+                  {
+                    id: "ucl_2425_sf1_vuelta",
+                    date: "2025-05-06",
+                    time: "21:00",
+                    round: "Semifinal - Vuelta",
+                    homeTeam: {
+                      id: teamsData["t_liv"].id, // Liverpool
+                      name: teamsData["t_liv"].name,
+                      logo: teamsData["t_liv"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t5"].id, // Manchester City
+                      name: teamsData["t5"].name,
+                      logo: teamsData["t5"].logo,
+                      score: 1,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Semifinal 2 - Ida
+                  {
+                    id: "ucl_2425_sf2_ida",
+                    date: "2025-04-30",
+                    time: "21:00",
+                    round: "Semifinal - Ida",
+                    homeTeam: {
+                      id: teamsData["t6"].id, // Bayern München (1° Grupo B)
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t1"].id, // Real Madrid (2° Grupo A)
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 2,
+                    },
+                    status: "FINALIZADO",
+                  },
+                  // Semifinal 2 - Vuelta
+                  {
+                    id: "ucl_2425_sf2_vuelta",
+                    date: "2025-05-07",
+                    time: "21:00",
+                    round: "Semifinal - Vuelta",
+                    homeTeam: {
+                      id: teamsData["t1"].id, // Real Madrid
                       name: teamsData["t1"].name,
                       logo: teamsData["t1"].logo,
                       score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t6"].id, // Bayern München
+                      name: teamsData["t6"].name,
+                      logo: teamsData["t6"].logo,
+                      score: 0,
                     },
                     status: "FINALIZADO",
                   },
@@ -574,16 +880,16 @@ export const dummyCompetitions: Competition[] = [
                     time: "21:00",
                     round: "Final",
                     homeTeam: {
-                      id: teamsData["t1"].id,
-                      name: teamsData["t1"].name,
-                      logo: teamsData["t1"].logo,
-                      score: 2,
-                    },
-                    awayTeam: {
-                      id: teamsData["t5"].id,
+                      id: teamsData["t5"].id, // Manchester City (ganador SF1: 3-2 global)
                       name: teamsData["t5"].name,
                       logo: teamsData["t5"].logo,
                       score: 1,
+                    },
+                    awayTeam: {
+                      id: teamsData["t1"].id, // Real Madrid (ganador SF2: 3-1 global)
+                      name: teamsData["t1"].name,
+                      logo: teamsData["t1"].logo,
+                      score: 2,
                     },
                     status: "FINALIZADO",
                   },

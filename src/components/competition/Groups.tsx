@@ -24,18 +24,19 @@ const Groups = ({ groups }: GroupsProps) => {
           {group.standings && group.standings.length > 0 ? (
             <View style={styles.standingsContainer}>
               <View style={styles.tableHeader}>
+                <Text style={[styles.headerText, styles.positionColumn]}>#</Text>
                 <Text style={[styles.headerText, styles.teamColumn]}>Equipo</Text>
                 <Text style={[styles.headerText, styles.statColumn]}>PJ</Text>
                 <Text style={[styles.headerText, styles.statColumn]}>G</Text>
                 <Text style={[styles.headerText, styles.statColumn]}>E</Text>
                 <Text style={[styles.headerText, styles.statColumn]}>P</Text>
-                <Text style={[styles.headerText, styles.statColumn]}>Pts</Text>
+                <Text style={[styles.headerText, styles.statColumn]}>PTS</Text>
               </View>
               
               {group.standings.map((entry) => (
                 <View key={entry.team.id} style={styles.tableRow}>
+                  <Text style={[styles.position, styles.positionColumn]}>{entry.position}</Text>
                   <View style={styles.teamInfo}>
-                    <Text style={styles.position}>{entry.position}</Text>
                     <Text style={styles.teamName} numberOfLines={1}>
                       {entry.team.name}
                     </Text>
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     padding: 16,
     backgroundColor: colors.background.surface,
-    borderRadius: 8,
+    borderRadius: 16,
   },
   groupTitle: {
     fontSize: 18,
@@ -108,6 +109,9 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
   },
+  positionColumn: {
+    width: 30,
+  },
   statColumn: {
     width: 32,
   },
@@ -120,13 +124,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.interactive.primary,
-    width: 20,
     textAlign: 'center',
   },
   teamName: {
     fontSize: 14,
     color: colors.text.primary,
-    marginLeft: 8,
     flex: 1,
   },
   statText: {
