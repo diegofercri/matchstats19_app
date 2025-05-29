@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { StandingEntry } from '@/types';
-import { colors } from '@colors';
+import { View, Text, StyleSheet } from "react-native";
+import { StandingEntry } from "@types";
+import { colors } from "@colors";
 
 interface StandingsProps {
   standings?: StandingEntry[];
@@ -29,19 +29,27 @@ const Standings = ({ standings }: StandingsProps) => {
         <Text style={styles.headerStat}>DIF</Text>
         <Text style={styles.headerStat}>PTS</Text>
       </View>
-      
+
       {/* Filas de la tabla */}
       <View style={styles.tableBody}>
         {standings.map((entry) => (
           <View key={entry.team.id} style={styles.row}>
             <Text style={styles.position}>{entry.position}</Text>
-            <Text style={styles.teamName} numberOfLines={1} ellipsizeMode="tail">
+            <Text
+              style={styles.teamName}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               {entry.team.name}
             </Text>
             <Text style={styles.stat}>{entry.won}</Text>
             <Text style={styles.stat}>{entry.drawn}</Text>
             <Text style={styles.stat}>{entry.lost}</Text>
-            <Text style={styles.stat}>{entry.goalDifference > 0 ? `+${entry.goalDifference}` : entry.goalDifference}</Text>
+            <Text style={styles.stat}>
+              {entry.goalDifference > 0
+                ? `+${entry.goalDifference}`
+                : entry.goalDifference}
+            </Text>
             <Text style={styles.points}>{entry.points}</Text>
           </View>
         ))}
@@ -58,12 +66,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 12,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.background.tertiary,
     paddingVertical: 12,
     paddingHorizontal: 8,
@@ -73,30 +81,30 @@ const styles = StyleSheet.create({
   headerPosition: {
     width: 32,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   headerTeam: {
     flex: 1,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text.secondary,
     marginLeft: 8,
   },
   headerStat: {
     width: 36,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   tableBody: {
     gap: 8,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 8,
     backgroundColor: colors.background.secondary,
@@ -106,8 +114,8 @@ const styles = StyleSheet.create({
     width: 32,
     fontSize: 12,
     color: colors.text.primary,
-    textAlign: 'center',
-    fontWeight: '600',
+    textAlign: "center",
+    fontWeight: "600",
   },
   teamName: {
     flex: 1,
@@ -119,14 +127,14 @@ const styles = StyleSheet.create({
     width: 36,
     fontSize: 12,
     color: colors.text.primary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   points: {
     width: 36,
     fontSize: 12,
     color: colors.interactive.primary,
-    textAlign: 'center',
-    fontWeight: 'bold',
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 

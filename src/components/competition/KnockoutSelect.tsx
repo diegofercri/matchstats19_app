@@ -1,6 +1,5 @@
-// KnockoutViewSelect.tsx
 import React from "react";
-import GenericSelect, { SelectOption } from "@/components/ui/Select";
+import GenericSelect, { SelectOption } from "@components/ui/Select";
 
 export type KnockoutViewType = 'list' | 'brackets';
 

@@ -1,21 +1,17 @@
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Link } from "expo-router";
-import { Competition } from "@/types";
-import { colors } from "@colors";
+import { Competition } from "@types";
+import { colors, componentThemes } from "@colors";
+
+type CompetitionListItemProps = {
+  competition: Competition;
+};
 
 export default function CompetitionListItem({
   competition,
-}: {
-  competition: Competition;
-}) {
+}: CompetitionListItemProps) {
   return (
-    <Link
-      href={{
-        pathname: "./[id]",
-        params: { id: competition.id },
-      }}
-      asChild
-    >
+    <Link href={{ pathname: `/home/competition/${competition.id}` }} asChild>
       <Pressable style={styles.container}>
         <View style={styles.card}>
           <Image
@@ -27,7 +23,11 @@ export default function CompetitionListItem({
             <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
               {competition.name}
             </Text>
-            <Text style={styles.description} numberOfLines={2} ellipsizeMode="tail">
+            <Text
+              style={styles.description}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
               {competition.description}
             </Text>
           </View>
@@ -42,16 +42,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.background.secondary,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: componentThemes.card.background,
     borderRadius: 12,
     padding: 16,
     gap: 20,
-    shadowColor: '#000',
+    // Sombra para iOS
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    // Elevación para Android
     elevation: 3,
   },
   image: {
@@ -64,8 +66,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
-    color: colors.text.primary,
+    fontWeight: "600",
+    color: componentThemes.card.text,
     marginBottom: 4,
   },
   description: {

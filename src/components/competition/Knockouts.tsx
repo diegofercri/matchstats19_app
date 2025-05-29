@@ -1,19 +1,21 @@
-// Knockouts.tsx
-import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '@colors';
-import { KnockoutRound } from '@/types';
-import MatchCard from './MatchCard';
+import { View, Text, StyleSheet } from "react-native";
+import { colors } from "@colors";
+import { KnockoutRound } from "@types";
+import MatchCard from "./MatchCard";
+import { useKnockoutRounds } from "@hooks/useKnockoutRounds";
 
 interface KnockoutsProps {
   rounds?: KnockoutRound[];
   emptyMessage?: string;
 }
 
-const Knockouts = ({ 
+const Knockouts = ({
   rounds,
-  emptyMessage = "No hay rondas eliminatorias disponibles."
+  emptyMessage = "No hay rondas eliminatorias disponibles.",
 }: KnockoutsProps) => {
-  if (!rounds || rounds.length === 0) {
+  const { hasRounds, hasMatches } = useKnockoutRounds(rounds);
+
+  if (!hasRounds) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>{emptyMessage}</Text>
@@ -21,38 +23,62 @@ const Knockouts = ({
     );
   }
 
-  // Check if there are actually matches to show
-  const hasMatches = rounds.some(round => round.matches && round.matches.length > 0);
-  
   if (!hasMatches) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No hay partidos eliminatorios disponibles.</Text>
+        <Text style={styles.emptyText}>
+          No hay partidos eliminatorios disponibles.
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {rounds.map((round) => (
-        <View key={round.id} style={styles.roundSection}>
-          <Text style={styles.roundTitle}>{round.name}</Text>
-          {round.matches && round.matches.length > 0 ? (
-            round.matches.map((match) => (
-              <MatchCard key={match.id} match={match} />
-            ))
-          ) : (
-            <View style={styles.noMatchesContainer}>
-              <Text style={styles.noMatchesText}>
-                Los partidos se definirán próximamente.
-              </Text>
-            </View>
-          )}
-        </View>
+      {rounds!.map((round) => (
+        <KnockoutRoundSection key={round.id} round={round} />
       ))}
     </View>
   );
 };
+
+// Separate component for knockout round section
+interface KnockoutRoundSectionProps {
+  round: KnockoutRound;
+}
+
+const KnockoutRoundSection = ({ round }: KnockoutRoundSectionProps) => (
+  <View style={styles.roundSection}>
+    <Text style={styles.roundTitle}>{round.name}</Text>
+    {round.matches && round.matches.length > 0 ? (
+      <RoundMatches matches={round.matches} />
+    ) : (
+      <NoMatchesPlaceholder />
+    )}
+  </View>
+);
+
+// Separate component for round matches
+interface RoundMatchesProps {
+  matches: any[];
+}
+
+const RoundMatches = ({ matches }: RoundMatchesProps) => (
+  <>
+    {matches.map((match) => (
+      <MatchCard key={match.id} match={match} />
+    ))}
+  </>
+);
+
+// Separate component for no matches placeholder
+const NoMatchesPlaceholder = () => (
+  <View style={styles.noMatchesContainer}>
+    <Text style={styles.noMatchesText}>
+      Los partidos se definirán próximamente.
+    </Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -65,18 +91,18 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   roundSection: {
     marginBottom: 24,
   },
   roundTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text.primary,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 16,
     paddingHorizontal: 16,
   },
@@ -87,8 +113,8 @@ const styles = StyleSheet.create({
   noMatchesText: {
     fontSize: 14,
     color: colors.text.muted,
-    textAlign: 'center',
-    fontStyle: 'italic',
+    textAlign: "center",
+    fontStyle: "italic",
   },
 });
 

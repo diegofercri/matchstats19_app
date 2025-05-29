@@ -1,6 +1,7 @@
 import { Text, View, Image, Pressable, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { colors } from "@/theme/colors";
 
 type BannerProps = {
   title: string;
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   badge: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.text.primary,
     alignSelf: 'flex-start',
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -75,19 +76,19 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     textTransform: 'uppercase',
-    color: '#18181b',
+    color: colors.background.primary,
   },
   title: {
     fontSize: 24,
     fontWeight: '400',
-    color: '#f1f5f9',
+    color: colors.text.primary,
     marginTop: 32,
     marginBottom: 10,
     lineHeight: 32,
   },
   date: {
     fontSize: 12,
-    color: '#e2e8f0',
+    color: colors.text.secondary,
   },
   rightSection: {
     flex: 1,

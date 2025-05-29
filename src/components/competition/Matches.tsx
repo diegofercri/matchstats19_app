@@ -1,8 +1,8 @@
-// Matches.tsx
 import { View, Text, StyleSheet } from "react-native";
 import { colors } from "@colors";
-import { Match } from "@/types";
+import { Match } from "@types";
 import MatchCard from "./MatchCard";
+import { useMatchesGrouping } from "@hooks/useMatchesGrouping";
 
 interface MatchesProps {
   matches?: Match[];
@@ -10,12 +10,17 @@ interface MatchesProps {
   emptyMessage?: string;
 }
 
-const Matches = ({ 
-  matches, 
+const Matches = ({
+  matches,
   showRounds = false,
-  emptyMessage = "No hay partidos disponibles para esta temporada."
+  emptyMessage = "No hay partidos disponibles para esta temporada.",
 }: MatchesProps) => {
-  if (!matches || matches.length === 0) {
+  const { groupedMatches, hasMatches } = useMatchesGrouping(
+    matches,
+    showRounds
+  );
+
+  if (!hasMatches) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>{emptyMessage}</Text>
@@ -23,49 +28,41 @@ const Matches = ({
     );
   }
 
-  // Group matches by round if showRounds is true
-  const groupedMatches = showRounds ? groupMatchesByRound(matches) : null;
-
-  const renderGroupedMatches = () => {
-    if (!groupedMatches) return null;
-
+  // Render grouped matches by round
+  if (showRounds && groupedMatches) {
     return (
       <View>
         {Object.entries(groupedMatches).map(([round, roundMatches]) => (
-          <View key={round} style={styles.roundSection}>
-            <Text style={styles.roundTitle}>{round}</Text>
-            {roundMatches.map((match) => (
-              <MatchCard key={match.id} match={match} />
-            ))}
-          </View>
+          <RoundSection key={round} round={round} matches={roundMatches} />
         ))}
       </View>
     );
-  };
-
-  if (showRounds && groupedMatches) {
-    return renderGroupedMatches();
   }
 
+  // Render all matches without grouping
   return (
     <View>
-      {matches.map((match) => (
+      {matches!.map((match) => (
         <MatchCard key={match.id} match={match} showRound={!showRounds} />
       ))}
     </View>
   );
 };
 
-const groupMatchesByRound = (matches: Match[]): Record<string, Match[]> => {
-  return matches.reduce((groups, match) => {
-    const round = match.round || "Sin Clasificar";
-    if (!groups[round]) {
-      groups[round] = [];
-    }
-    groups[round].push(match);
-    return groups;
-  }, {} as Record<string, Match[]>);
-};
+// Separate component for round sections
+interface RoundSectionProps {
+  round: string;
+  matches: Match[];
+}
+
+const RoundSection = ({ round, matches }: RoundSectionProps) => (
+  <View style={styles.roundSection}>
+    <Text style={styles.roundTitle}>{round}</Text>
+    {matches.map((match) => (
+      <MatchCard key={match.id} match={match} />
+    ))}
+  </View>
+);
 
 const styles = StyleSheet.create({
   emptyContainer: {
@@ -75,18 +72,18 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   roundSection: {
     marginBottom: 24,
   },
   roundTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text.primary,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 16,
     paddingHorizontal: 16,
   },

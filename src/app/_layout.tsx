@@ -16,7 +16,6 @@ const myTheme = {
 };
 
 export default function RootLayout() {
-  console.log("RootLayout Rendered");
   return (
     <ThemeProvider value={myTheme}>
       <Slot />

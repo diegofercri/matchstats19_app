@@ -1,19 +1,15 @@
 // app/(tabs)/_layout.tsx
 import { Tabs } from "expo-router";
-import { HomeIcon } from "@components/icons/Home"; // Asegúrate que estas rutas son correctas
+import { HomeIcon } from "@components/icons/Home";
 import { ProfileIcon } from "@components/icons/Profile";
 import { WebIcon } from "@components/icons/Web";
-import React from 'react';
 
 export default function TabsLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarShowLabel: false,
-      }}
-    >
+    <Tabs screenOptions={{ tabBarShowLabel: false }}>
+      <Tabs.Screen name="index" options={{ href: null }} />
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Inicio",
           headerShown: false,

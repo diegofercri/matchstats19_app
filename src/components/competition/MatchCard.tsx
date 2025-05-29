@@ -1,7 +1,8 @@
-// MatchCard.tsx
 import { View, Text, StyleSheet, Image } from "react-native";
 import { colors } from "@colors";
-import { Match } from "@/types";
+import { Match } from "@types";
+import { useMatchStatus } from "@hooks/useMatchStatus";
+import { useMatchFormatting } from "@hooks/useMatchFormatting";
 
 interface MatchCardProps {
   match: Match;
@@ -9,130 +10,103 @@ interface MatchCardProps {
 }
 
 const MatchCard = ({ match, showRound = false }: MatchCardProps) => {
-  const getStatusBadgeStyle = (status: string) => {
-    const isPlaying = status === "JUGANDO" || status === "DESCANSO";
-    return [
-      styles.statusBadge,
-      {
-        backgroundColor: isPlaying
-          ? colors.interactive.primary
-          : colors.background.tertiary,
-      },
-    ];
-  };
+  const { statusBadgeStyle, statusText, isLiveMatch } = useMatchStatus(match);
 
-  const getStatusText = (match: Match) => {
-    switch (match.status) {
-      case "FINALIZADO":
-        return "Finalizado";
-      case "JUGANDO":
-        return "Jugando";
-      case "DESCANSO":
-        return "Descanso";
-      default:
-        return "Programado";
-    }
-  };
-
-  const getScoreText = (match: Match) => {
-    if (match.status === "FINALIZADO") {
-      return `${match.homeTeam.score} - ${match.awayTeam.score}`;
-    } else if (match.status === "JUGANDO" || match.status === "DESCANSO") {
-      return `${match.homeTeam.score || 0} - ${match.awayTeam.score || 0}`;
-    } else {
-      return "VS";
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
-
-  const isLiveMatch = match.status === "JUGANDO" || match.status === "DESCANSO";
+  const { formattedDate, scoreText } = useMatchFormatting(match);
 
   return (
     <View style={styles.matchCard}>
       {showRound && match.round && (
         <Text style={styles.roundText}>{match.round}</Text>
       )}
-      
+
       <View style={styles.matchContent}>
-        {/* Equipo Local */}
-        <View style={styles.teamContainer}>
-          <View style={styles.shieldContainer}>
-            {match.homeTeam.logo ? (
-              <Image
-                source={{ uri: match.homeTeam.logo }}
-                style={styles.teamShield}
-                resizeMode="contain"
-              />
-            ) : (
-              <View style={styles.placeholderShield}>
-                <Text style={styles.placeholderText}>
-                  {match.homeTeam.name.substring(0, 2).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.teamName} numberOfLines={2}>
-            {match.homeTeam.name}
-          </Text>
-        </View>
+        <TeamSection team={match.homeTeam} />
 
-        {/* Centro - Fecha, Resultado y Estado */}
-        <View style={styles.centerContainer}>
-          <Text style={styles.dateText}>
-            {formatDate(match.date)}
-          </Text>
-          <Text style={styles.timeText}>{match.time}</Text>
-          <Text style={[styles.scoreText, isLiveMatch && styles.liveScore]}>
-            {getScoreText(match)}
-          </Text>
-          <View style={getStatusBadgeStyle(match.status)}>
-            <Text
-              style={[
-                styles.statusText,
-                {
-                  color: isLiveMatch
-                    ? colors.interactive.primaryText
-                    : colors.text.primary,
-                },
-              ]}
-            >
-              {getStatusText(match)}
-            </Text>
-          </View>
-        </View>
+        <MatchCenter
+          date={formattedDate}
+          time={match.time}
+          score={scoreText}
+          isLive={isLiveMatch}
+          statusBadgeStyle={statusBadgeStyle}
+          statusText={statusText}
+        />
 
-        {/* Equipo Visitante */}
-        <View style={styles.teamContainer}>
-          <View style={styles.shieldContainer}>
-            {match.awayTeam.logo ? (
-              <Image
-                source={{ uri: match.awayTeam.logo }}
-                style={styles.teamShield}
-                resizeMode="contain"
-              />
-            ) : (
-              <View style={styles.placeholderShield}>
-                <Text style={styles.placeholderText}>
-                  {match.awayTeam.name.substring(0, 2).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.teamName} numberOfLines={2}>
-            {match.awayTeam.name}
-          </Text>
-        </View>
+        <TeamSection team={match.awayTeam} />
       </View>
     </View>
   );
 };
+
+// Separate component for team section
+interface TeamSectionProps {
+  team: {
+    name: string;
+    logo?: string;
+  };
+}
+
+const TeamSection = ({ team }: TeamSectionProps) => (
+  <View style={styles.teamContainer}>
+    <View style={styles.shieldContainer}>
+      {team.logo ? (
+        <Image
+          source={{ uri: team.logo }}
+          style={styles.teamShield}
+          resizeMode="contain"
+        />
+      ) : (
+        <View style={styles.placeholderShield}>
+          <Text style={styles.placeholderText}>
+            {team.name.substring(0, 2).toUpperCase()}
+          </Text>
+        </View>
+      )}
+    </View>
+    <Text style={styles.teamName} numberOfLines={2}>
+      {team.name}
+    </Text>
+  </View>
+);
+
+// Separate component for match center info
+interface MatchCenterProps {
+  date: string;
+  time: string;
+  score: string;
+  isLive: boolean;
+  statusBadgeStyle: any[];
+  statusText: string;
+}
+
+const MatchCenter = ({
+  date,
+  time,
+  score,
+  isLive,
+  statusBadgeStyle,
+  statusText,
+}: MatchCenterProps) => (
+  <View style={styles.centerContainer}>
+    <Text style={styles.dateText}>{date}</Text>
+    <Text style={styles.timeText}>{time}</Text>
+    <Text style={[styles.scoreText, isLive && styles.liveScore]}>{score}</Text>
+    <View style={statusBadgeStyle}>
+      <Text
+        style={[
+          styles.statusText,
+          {
+            color: isLive
+              ? colors.interactive.primaryText
+              : colors.text.primary,
+          },
+        ]}
+      >
+        {statusText}
+      </Text>
+    </View>
+  </View>
+);
 
 const styles = StyleSheet.create({
   matchCard: {
@@ -141,7 +115,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: colors.background.surface,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -152,7 +126,7 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     marginBottom: 12,
     textAlign: "center",
-    fontWeight: '500',
+    fontWeight: "500",
   },
   matchContent: {
     flexDirection: "row",
@@ -186,7 +160,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text.secondary,
   },
   teamName: {
@@ -194,7 +168,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: "center",
     lineHeight: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   centerContainer: {
     flex: 1,
@@ -205,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.text.tertiary,
     marginBottom: 2,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   timeText: {
     fontSize: 11,

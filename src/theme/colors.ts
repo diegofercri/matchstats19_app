@@ -64,7 +64,7 @@ export const getColor = (path: string): string => {
   return current;
 };
 
-// Themes predefine para diferentes componentes
+// Themes predefinidos para diferentes componentes
 export const componentThemes = {
   // Theme para cards/contenedores
   card: {

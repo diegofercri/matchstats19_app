@@ -2,12 +2,8 @@
 import {
   User,
   Competition,
-  Season,
   Team,
-  Match,
-  StandingEntry,
-  KnockoutRound,
-} from "@/types";
+} from "@types";
 
 export const dummyUsers: User[] = [
   {

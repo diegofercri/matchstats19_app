@@ -1,6 +1,6 @@
 // SeasonSelect.tsx
 import React from "react";
-import GenericSelect, { SelectOption } from "@/components/ui/Select";
+import Select, { SelectOption } from "@components/ui/Select";
 
 interface Season {
   label: string;
@@ -31,7 +31,7 @@ function SeasonSelect({
   }));
 
   return (
-    <GenericSelect
+    <Select
       options={options}
       selectedValue={selectedValue}
       onValueChange={onValueChange}
