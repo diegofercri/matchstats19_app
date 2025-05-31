@@ -1,6 +1,14 @@
 import { Svg, Path, SvgProps } from 'react-native-svg';
 import { colors } from '@colors';
 
+/**
+ * Profile/User icon component using SVG
+ * Displays a user profile icon with head and shoulders silhouette within a circle
+ * Features layered design with background circle and foreground user silhouette
+ * 
+ * @param props - SVG properties including optional fill color and standard SVG attributes
+ * @returns JSX element containing SVG profile/user icon
+ */
 export function ProfileIcon({ fill = colors.interactive.primary, ...props }: SvgProps) {
   return (
     <Svg

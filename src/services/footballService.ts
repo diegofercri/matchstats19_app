@@ -6,14 +6,11 @@ import {
   Team,
   Match,
   StandingEntry,
-  GroupPhase,
   LeaguePhase,
   KnockoutPhase,
   KnockoutRound,
-  Group
 } from '@/types';
 import {
-  transformLeaguesResponse,
   transformFixturesResponse,
   transformStandingsResponse,
   transformTeamsResponse,
@@ -25,6 +22,10 @@ import {
 
 const API_BASE_URL = 'https://v3.football.api-sports.io';
 
+/**
+ * Service class for handling football API operations
+ * Provides methods to fetch competitions, matches, standings, and other football data
+ */
 class FootballService {
   private headers: Record<string, string>;
 
@@ -43,6 +44,13 @@ class FootballService {
     };
   }
 
+  /**
+   * Makes HTTP request to football API with error handling
+   * 
+   * @param endpoint - API endpoint to call
+   * @param params - Query parameters for the request
+   * @returns Promise with API response data
+   */
   private async makeRequest(endpoint: string, params: Record<string, any> = {}): Promise<any> {
     try {
       const queryParams = new URLSearchParams(
@@ -55,7 +63,6 @@ class FootballService {
       ).toString();
       
       const url = `${API_BASE_URL}${endpoint}${queryParams ? `?${queryParams}` : ''}`;
-      console.log(`🌐 API Call: ${endpoint}`, params);
       
       const response = await fetch(url, {
         method: 'GET',
@@ -67,89 +74,78 @@ class FootballService {
       }
 
       const data = await response.json();
-      console.log(`✅ API Response: ${endpoint} - ${data.response?.length || 0} items`);
       return data;
     } catch (error) {
-      console.error(`❌ Error en ${endpoint}:`, error);
       throw error;
     }
   }
 
   /**
-   * Obtiene las competiciones principales (solo Champions y LaLiga para testing)
+   * Gets main competitions (Champions League and LaLiga for testing)
+   * 
+   * @returns Promise with array of main competitions
    */
   async getMainCompetitions(): Promise<Competition[]> {
     try {
-      console.log('🏆 Iniciando carga de competiciones principales...');
-      
       const mainLeagueIds = [2, 140]; // Champions League, LaLiga
       const competitions: Competition[] = [];
 
       for (const leagueId of mainLeagueIds) {
         try {
-          console.log(`⚽ Cargando liga ${leagueId}...`);
-          
           const leagueResponse = await this.makeRequest('/leagues', { id: leagueId });
           
           if (leagueResponse.response && leagueResponse.response.length > 0) {
             const leagueData = leagueResponse.response[0];
             
-            // Crear seasons básicas (solo la más reciente)
+            // Create basic seasons (only the most recent)
             const seasons = leagueData.seasons?.slice(-1).map((season: any) => 
               mapSeason(season, leagueId.toString())
             ) || [];
             
             const competition = mapCompetition(leagueData.league, seasons);
             competitions.push(competition);
-            
-            console.log(`✅ Liga cargada: ${competition.name} (${seasons.length} temporadas)`);
           }
         } catch (error) {
-          console.warn(`⚠️ Error cargando liga ${leagueId}:`, error);
+          // Continue with other leagues if one fails
         }
       }
 
-      console.log(`🎯 Total competiciones: ${competitions.length}`);
       return competitions;
     } catch (error) {
-      console.error('❌ Error obteniendo competiciones:', error);
       throw new Error('Error al obtener las competiciones principales');
     }
   }
 
   /**
-   * Obtiene datos completos de una competición específica
+   * Gets complete data for a specific competition
+   * 
+   * @param competitionId - Competition ID to fetch data for
+   * @returns Promise with complete competition data or null if not found
    */
   async getCompetitionData(competitionId: string): Promise<Competition | null> {
     try {
-      console.log(`🔍 Obteniendo datos completos para competición: ${competitionId}`);
-      
       const leagueId = parseInt(competitionId);
       if (isNaN(leagueId)) {
         throw new Error('ID de competición inválido');
       }
 
-      // Obtener información básica de la liga
+      // Get basic league information
       const leagueResponse = await this.makeRequest('/leagues', { id: leagueId });
       
       if (!leagueResponse.response || leagueResponse.response.length === 0) {
-        console.warn(`❌ No se encontró la liga ${leagueId}`);
         return null;
       }
 
       const leagueData = leagueResponse.response[0];
-      console.log(`📋 Liga encontrada: ${leagueData.league.name}`);
       
-      // Obtener coverage para saber qué datos están disponibles
+      // Get coverage to know what data is available
       const coverage = leagueData.coverage || {};
-      console.log(`📊 Coverage disponible:`, coverage);
       
-      // Crear seasons con datos completos (solo la más reciente)
+      // Create seasons with complete data (only the most recent)
       const seasons: Season[] = [];
       
       if (leagueData.seasons && leagueData.seasons.length > 0) {
         const recentSeason = leagueData.seasons[leagueData.seasons.length - 1];
-        console.log(`📅 Procesando temporada: ${recentSeason.year}`);
         
         const season = await this.buildCompleteSeasonData(leagueId, recentSeason, coverage);
         seasons.push(season);
@@ -157,31 +153,32 @@ class FootballService {
 
       const competition = mapCompetition(leagueData.league, seasons);
       
-      // Establecer fechas de la competición
+      // Set competition dates
       if (seasons.length > 0) {
         const latestSeason = seasons[0];
         competition.startDate = latestSeason.startDate;
         competition.endDate = latestSeason.endDate;
       }
 
-      console.log(`🏆 Competición completada: ${competition.name}`);
       return competition;
     } catch (error) {
-      console.error('❌ Error obteniendo datos de competición:', error);
       throw new Error('Error al obtener los datos de la competición');
     }
   }
 
   /**
-   * Construye una Season con todos sus datos completos
+   * Builds a Season with all its complete data
+   * 
+   * @param leagueId - League ID
+   * @param seasonData - Season raw data from API
+   * @param coverage - Coverage information for the league
+   * @returns Promise with complete season data
    */
   private async buildCompleteSeasonData(leagueId: number, seasonData: any, coverage: any): Promise<Season> {
     const season = mapSeason(seasonData, leagueId.toString());
     
     try {
-      console.log(`🔨 Construyendo datos completos para ${leagueId}-${seasonData.year}`);
-      
-      // 1. Obtener equipos si están disponibles
+      // 1. Get teams if available
       let teams: Team[] = [];
       if (coverage.standings !== false) {
         try {
@@ -190,14 +187,13 @@ class FootballService {
             season: seasonData.year
           });
           teams = safeTransform(transformTeamsResponse, teamsResponse);
-          console.log(`👥 Equipos cargados: ${teams.length}`);
         } catch (error) {
-          console.warn(`⚠️ Error cargando equipos:`, error);
+          // Continue without teams if fails
         }
       }
       season.teams = teams;
 
-      // 2. Obtener todos los partidos
+      // 2. Get all matches
       let allMatches: Match[] = [];
       try {
         const fixturesResponse = await this.makeRequest('/fixtures', {
@@ -205,12 +201,11 @@ class FootballService {
           season: seasonData.year
         });
         allMatches = safeTransform(transformFixturesResponse, fixturesResponse);
-        console.log(`⚽ Partidos cargados: ${allMatches.length}`);
       } catch (error) {
-        console.warn(`⚠️ Error cargando partidos:`, error);
+        // Continue without matches if fails
       }
 
-      // 3. Obtener clasificación si está disponible
+      // 3. Get standings if available
       let standings: StandingEntry[] = [];
       if (coverage.standings !== false) {
         try {
@@ -219,27 +214,14 @@ class FootballService {
             season: seasonData.year
           });
           
-          console.log('🔍 Raw standings response:', JSON.stringify(standingsResponse, null, 2));
-          
           standings = safeTransform(transformStandingsResponse, standingsResponse);
-          console.log(`📊 Clasificación cargada: ${standings.length} equipos`);
-          
-          // Debug adicional de standings
-          if (standings.length > 0) {
-            console.log('📋 Primeros 3 equipos de la clasificación:');
-            standings.slice(0, 3).forEach(team => {
-              console.log(`  ${team.position}. ${team.team.name} - ${team.points} pts`);
-            });
-          } else {
-            console.warn('⚠️ No se encontraron standings después de la transformación');
-          }
           
         } catch (error) {
-          console.warn(`⚠️ Error cargando clasificación:`, error);
+          // Continue without standings if fails
         }
       }
 
-      // 4. Obtener rondas para organizar mejor las fases
+      // 4. Get rounds to better organize phases
       let rounds: string[] = [];
       try {
         const roundsResponse = await this.makeRequest('/rounds', {
@@ -247,20 +229,18 @@ class FootballService {
           season: seasonData.year
         });
         rounds = safeTransform(transformRoundsResponse, roundsResponse);
-        console.log(`🔄 Rondas encontradas: ${rounds.length}`);
       } catch (error) {
-        console.warn(`⚠️ Error cargando rondas:`, error);
+        // Continue without rounds if fails
       }
 
-      // 5. Estructurar en fases según el tipo de competición
+      // 5. Structure into phases according to competition type
       const competitionType = this.determineCompetitionType(leagueId);
-      console.log(`🏷️ Tipo de competición: ${competitionType}`);
 
-      // Asignar datos básicos para compatibilidad
+      // Assign basic data for compatibility
       season.matches = allMatches;
       season.standings = standings;
 
-      // Crear fases organizadas
+      // Create organized phases
       season.phases = await this.buildOrganizedPhases(
         leagueId, 
         seasonData.year, 
@@ -271,11 +251,8 @@ class FootballService {
         teams
       );
 
-      console.log(`✅ Temporada completada con ${season.phases?.length || 0} fases`);
-
     } catch (error) {
-      console.warn(`⚠️ Error construyendo temporada:`, error);
-      // Fallback: asegurar estructura mínima
+      // Fallback: ensure minimum structure
       season.matches = season.matches || [];
       season.standings = season.standings || [];
       season.teams = season.teams || [];
@@ -286,7 +263,16 @@ class FootballService {
   }
 
   /**
-   * Construye fases organizadas según el tipo de competición
+   * Builds organized phases according to competition type
+   * 
+   * @param leagueId - League identifier
+   * @param season - Season year
+   * @param competitionType - Type of competition (league/cup/mixed)
+   * @param allMatches - All matches for the season
+   * @param standings - Standings data
+   * @param rounds - Available round names
+   * @param teams - Teams participating
+   * @returns Promise with array of organized phases
    */
   private async buildOrganizedPhases(
     leagueId: number,
@@ -301,7 +287,7 @@ class FootballService {
 
     try {
       if (competitionType === 'league') {
-        // Liga tradicional - una sola fase de liga
+        // Traditional league - single league phase
         const leaguePhase: LeaguePhase = {
           id: `${leagueId}-${season}-league`,
           name: 'Liga',
@@ -310,13 +296,11 @@ class FootballService {
           standings: standings
         };
         phases.push(leaguePhase);
-        
-        console.log(`📊 Fase de liga creada con ${standings.length} equipos en standings`);
 
       } else if (competitionType === 'cup') {
-        // Copa - separar en fases de liga y eliminatorias
+        // Cup - separate into league and knockout phases
         
-        // Fase de liga (partidos de grupos o fase inicial)
+        // League phase (group matches or initial phase)
         const leagueMatches = allMatches.filter(match => 
           this.isLeaguePhaseRound(match.round)
         );
@@ -330,19 +314,12 @@ class FootballService {
             standings: standings
           };
           phases.push(leaguePhase);
-          
-          console.log(`📊 Fase de liga (copa) creada con ${standings.length} equipos en standings`);
         }
 
-        // Fase de eliminatorias (filtrada sin playoffs)
+        // Knockout phase (filtered without playoffs)
         const knockoutMatches = allMatches.filter(match => 
           this.isKnockoutPhaseRound(match.round)
         );
-
-        console.log(`🔥 Partidos de knockout encontrados: ${knockoutMatches.length}`);
-        knockoutMatches.forEach(match => {
-          console.log(`  - ${match.round}: ${match.homeTeam.name} vs ${match.awayTeam.name}`);
-        });
 
         if (knockoutMatches.length > 0) {
           const knockoutRounds = this.createKnockoutRounds(knockoutMatches, rounds);
@@ -355,13 +332,11 @@ class FootballService {
               rounds: knockoutRounds
             };
             phases.push(knockoutPhase);
-            
-            console.log(`🏆 Fase de eliminatorias creada con ${knockoutRounds.length} rondas`);
           }
         }
 
       } else {
-        // Competición mixta o desconocida
+        // Mixed or unknown competition
         const leaguePhase: LeaguePhase = {
           id: `${leagueId}-${season}-mixed`,
           name: 'Competición',
@@ -370,19 +345,20 @@ class FootballService {
           standings: standings
         };
         phases.push(leaguePhase);
-        
-        console.log(`📊 Fase mixta creada con ${standings.length} equipos en standings`);
       }
 
     } catch (error) {
-      console.warn('⚠️ Error creando fases organizadas:', error);
+      // Continue with fallback if phase creation fails
     }
 
     return phases;
   }
 
   /**
-   * Determina si una ronda pertenece a la fase de liga
+   * Determines if a round belongs to league phase
+   * 
+   * @param round - Round name to check
+   * @returns True if round is league phase, false otherwise
    */
   private isLeaguePhaseRound(round: string): boolean {
     const lowerRound = round.toLowerCase();
@@ -391,33 +367,34 @@ class FootballService {
   }
 
   /**
-   * Determina si una ronda pertenece a la fase de eliminatorias (sin playoffs)
+   * Determines if a round belongs to knockout phase (without playoffs)
+   * 
+   * @param round - Round name to check
+   * @returns True if round is knockout phase, false otherwise
    */
   private isKnockoutPhaseRound(round: string): boolean {
     const lowerRound = round.toLowerCase();
     
-    // Para Champions League, excluir play-offs y cualificaciones
+    // For Champions League, exclude play-offs and qualifications
     const knockoutKeywords = [
       'round of 16', 'round of 32', '1/8', '1/4', '1/2',
       'quarter', 'semi', 'final'
     ];
     
-    // Excluir explícitamente playoffs y qualificaciones
+    // Explicitly exclude playoffs and qualifications
     const excludeKeywords = [
       'play-off', 'playoff', 'qualifying', 'qualification', 'qualif'
     ];
     
-    // Verificar que NO contenga palabras excluidas
+    // Check that it does NOT contain excluded words
     const hasExcludedWords = excludeKeywords.some(keyword => lowerRound.includes(keyword));
     if (hasExcludedWords) {
-      console.log(`🚫 Excluyendo ronda: ${round} (contiene: ${excludeKeywords.find(k => lowerRound.includes(k))})`);
       return false;
     }
     
-    // Verificar que SÍ contenga palabras de knockout
+    // Check that it DOES contain knockout words
     const hasKnockoutWords = knockoutKeywords.some(keyword => lowerRound.includes(keyword));
     if (hasKnockoutWords) {
-      console.log(`✅ Incluyendo ronda knockout: ${round}`);
       return true;
     }
     
@@ -425,13 +402,17 @@ class FootballService {
   }
 
   /**
-   * Crea rondas de knockout organizadas
+   * Creates organized knockout rounds
+   * 
+   * @param knockoutMatches - Matches from knockout phase
+   * @param availableRounds - Available round names
+   * @returns Array of organized knockout rounds
    */
   private createKnockoutRounds(knockoutMatches: Match[], availableRounds: string[]): KnockoutRound[] {
     const rounds: KnockoutRound[] = [];
     
     try {
-      // Agrupar partidos por ronda
+      // Group matches by round
       const matchesByRound = knockoutMatches.reduce((groups, match) => {
         const roundName = match.round;
         if (!groups[roundName]) {
@@ -441,7 +422,7 @@ class FootballService {
         return groups;
       }, {} as Record<string, Match[]>);
       
-      // Ordenar rondas según prioridad estándar
+      // Sort rounds according to standard priority
       const sortedRounds = this.sortKnockoutRounds(Object.keys(matchesByRound));
       
       sortedRounds.forEach(roundName => {
@@ -453,14 +434,17 @@ class FootballService {
       });
       
     } catch (error) {
-      console.warn('⚠️ Error creando rondas de knockout:', error);
+      // Continue with empty rounds if creation fails
     }
     
     return rounds;
   }
 
   /**
-   * Ordena las rondas de knockout por prioridad
+   * Sorts knockout rounds by priority
+   * 
+   * @param rounds - Array of round names to sort
+   * @returns Sorted array of round names
    */
   private sortKnockoutRounds(rounds: string[]): string[] {
     const priority = {
@@ -482,7 +466,7 @@ class FootballService {
         for (const [key, value] of Object.entries(priority)) {
           if (lower.includes(key)) return value;
         }
-        return 999; // Rondas no reconocidas al final
+        return 999; // Unrecognized rounds at the end
       };
 
       return getPriority(a) - getPriority(b);
@@ -490,7 +474,10 @@ class FootballService {
   }
 
   /**
-   * Genera ID único para una ronda
+   * Generates unique ID for a round
+   * 
+   * @param roundName - Round name to generate ID from
+   * @returns Formatted round ID
    */
   private generateRoundId(roundName: string): string {
     return roundName.toLowerCase()
@@ -500,7 +487,10 @@ class FootballService {
   }
 
   /**
-   * Determina el tipo de competición basado en el ID de la liga
+   * Determines competition type based on league ID
+   * 
+   * @param leagueId - League identifier
+   * @returns Competition type (league/cup/mixed)
    */
   private determineCompetitionType(leagueId: number): 'league' | 'cup' | 'mixed' {
     const cupCompetitions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // Champions, Europa League, etc.
@@ -512,7 +502,10 @@ class FootballService {
   }
 
   /**
-   * Obtiene partidos filtrados
+   * Gets filtered matches
+   * 
+   * @param params - Filter parameters for matches
+   * @returns Promise with filtered matches array
    */
   async getMatches(params: {
     league?: number;
@@ -528,46 +521,52 @@ class FootballService {
       const response = await this.makeRequest('/fixtures', params);
       return safeTransform(transformFixturesResponse, response);
     } catch (error) {
-      console.error('❌ Error obteniendo partidos:', error);
       return [];
     }
   }
 
   /**
-   * Obtiene partidos en vivo
+   * Gets live matches
+   * 
+   * @returns Promise with array of live matches
    */
   async getLiveMatches(): Promise<Match[]> {
     try {
       const response = await this.makeRequest('/fixtures', { live: 'all' });
       return safeTransform(transformFixturesResponse, response);
     } catch (error) {
-      console.error('❌ Error obteniendo partidos en vivo:', error);
       return [];
     }
   }
 
   /**
-   * Obtiene clasificación de una liga
+   * Gets league standings
+   * 
+   * @param league - League ID
+   * @param season - Season year
+   * @returns Promise with standings array
    */
   async getStandings(league: number, season: number): Promise<StandingEntry[]> {
     try {
       const response = await this.makeRequest('/standings', { league, season });
       return safeTransform(transformStandingsResponse, response);
     } catch (error) {
-      console.error('❌ Error obteniendo clasificación:', error);
       return [];
     }
   }
 
   /**
-   * Obtiene las rondas disponibles de una competición
+   * Gets available rounds for a competition
+   * 
+   * @param league - League ID
+   * @param season - Season year
+   * @returns Promise with array of round names
    */
   async getRounds(league: number, season: number): Promise<string[]> {
     try {
       const response = await this.makeRequest('/rounds', { league, season });
       return safeTransform(transformRoundsResponse, response);
     } catch (error) {
-      console.error('❌ Error obteniendo rondas:', error);
       return [];
     }
   }

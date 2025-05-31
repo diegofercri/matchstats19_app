@@ -8,10 +8,22 @@ import {
   MATCH_SPACING_IN_COLUMN 
 } from '@constants/bracketConstants';
 
+/**
+ * Props interface for InterRoundConnector component
+ * Defines number of source matches for connector calculation
+ */
 interface InterRoundConnectorProps {
   numSourceMatches: number; 
 }
 
+/**
+ * Inter-round connector component for tournament bracket visualization
+ * Creates visual connections between tournament rounds with calculated positioning
+ * Handles single match and multiple match scenarios with appropriate line routing
+ * 
+ * @param props - Connector properties including source match count
+ * @returns JSX element containing connector lines or null for invalid configurations
+ */
 export const InterRoundConnector: React.FC<InterRoundConnectorProps> = ({ numSourceMatches }) => {
   const numTargetConnectorUnits = Math.floor(numSourceMatches / 2);
 
@@ -38,7 +50,13 @@ export const InterRoundConnector: React.FC<InterRoundConnectorProps> = ({ numSou
   );
 };
 
-// Separate component for connector unit
+/**
+ * Connector unit component for individual match pair connections
+ * Creates complex line routing between two source matches to one target position
+ * Features horizontal and vertical line segments with precise positioning
+ * 
+ * @returns JSX element containing connector lines for match pair routing
+ */
 const ConnectorUnit = () => {
   const totalHeightPerPair = (EFFECTIVE_MATCH_CARD_HEIGHT * 2) + MATCH_SPACING_IN_COLUMN;
   const verticalOffsetToFirstCardCenter = EFFECTIVE_MATCH_CARD_HEIGHT / 1.47;
@@ -49,13 +67,13 @@ const ConnectorUnit = () => {
   return (
     <View style={[styles.connectorUnit, { height: totalHeightPerPair }]}>
       <View style={styles.connectorSegment}>
-        {/* Línea horizontal desde la primera tarjeta */}
+        {/* Horizontal line from first card */}
         <View style={[
           styles.horizontalLine,
           { top: verticalOffsetToFirstCardCenter - (CONNECTOR_THICKNESS / 2) }
         ]} />
         
-        {/* Línea vertical conectando ambas tarjetas */}
+        {/* Vertical line connecting both cards */}
         <View style={[
           styles.verticalLine,
           {
@@ -65,14 +83,14 @@ const ConnectorUnit = () => {
           }
         ]} />
         
-        {/* Línea horizontal desde la segunda tarjeta */}
+        {/* Horizontal line from second card */}
         <View style={[
           styles.horizontalLine,
           { top: verticalOffsetToSecondCardCenter - (CONNECTOR_THICKNESS / 2) }
         ]} />
       </View>
       
-      {/* Línea horizontal hacia la siguiente ronda */}
+      {/* Horizontal line to next round */}
       <View style={[
         styles.nextRoundLine,
         { marginTop: midPointBetweenCards - (CONNECTOR_THICKNESS / 2) }

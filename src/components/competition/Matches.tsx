@@ -4,12 +4,24 @@ import { Match } from "@types";
 import MatchCard from "./MatchCard";
 import { useMatchesGrouping } from "@hooks/useMatchesGrouping";
 
+/**
+ * Props interface for Matches component
+ * Defines match data, display options, and customization settings
+ */
 interface MatchesProps {
   matches?: Match[];
   showRounds?: boolean;
   emptyMessage?: string;
 }
 
+/**
+ * Matches component for displaying match lists with optional round grouping
+ * Supports both flat list and grouped by round display modes
+ * Shows empty state when no matches are available
+ * 
+ * @param props - Matches properties including data, display options, and messages
+ * @returns JSX element containing match list or empty state
+ */
 const Matches = ({
   matches,
   showRounds = false,
@@ -49,12 +61,22 @@ const Matches = ({
   );
 };
 
-// Separate component for round sections
+/**
+ * Props interface for RoundSection component
+ * Defines round name and associated matches for grouped display
+ */
 interface RoundSectionProps {
   round: string;
   matches: Match[];
 }
 
+/**
+ * Round section component for displaying matches grouped by round
+ * Shows round title followed by all matches for that round
+ * 
+ * @param props - Round section properties including round name and matches
+ * @returns JSX element containing round title and match cards
+ */
 const RoundSection = ({ round, matches }: RoundSectionProps) => (
   <View style={styles.roundSection}>
     <Text style={styles.roundTitle}>{round}</Text>

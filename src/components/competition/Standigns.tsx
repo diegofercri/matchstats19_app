@@ -2,10 +2,22 @@ import { View, Text, StyleSheet } from "react-native";
 import { StandingEntry } from "@types";
 import { colors } from "@colors";
 
+/**
+ * Props interface for Standings component
+ * Defines optional standings data for table display
+ */
 interface StandingsProps {
   standings?: StandingEntry[];
 }
 
+/**
+ * Standings table component for displaying league/competition standings
+ * Features complete table with position, team names, statistics, and points
+ * Shows empty state when no standings data is available
+ * 
+ * @param props - Standings properties containing optional standings data
+ * @returns JSX element containing standings table or empty state message
+ */
 const Standings = ({ standings }: StandingsProps) => {
   if (!standings || standings.length === 0) {
     return (
@@ -19,7 +31,7 @@ const Standings = ({ standings }: StandingsProps) => {
 
   return (
     <View>
-      {/* Encabezado de la tabla */}
+      {/* Table header */}
       <View style={styles.header}>
         <Text style={styles.headerPosition}>#</Text>
         <Text style={styles.headerTeam}>Equipo</Text>
@@ -30,7 +42,7 @@ const Standings = ({ standings }: StandingsProps) => {
         <Text style={styles.headerStat}>PTS</Text>
       </View>
 
-      {/* Filas de la tabla */}
+      {/* Table rows */}
       <View style={styles.tableBody}>
         {standings.map((entry) => (
           <View key={entry.team.id} style={styles.row}>

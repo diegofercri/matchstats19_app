@@ -15,8 +15,12 @@ import { ErrorScreen } from '@components/ui/ErrorScreen';
 
 import { colors } from '@colors';
 
+/**
+ * Home screen component displaying competitions list and promotional banner
+ * Main entry point for browsing available football competitions
+ */
 export default function HomeScreen() {
-  // Custom Hook - Gestión de estado de competiciones
+  // Custom Hook - Competition state management
   const { 
     competitions, 
     loading, 
@@ -26,7 +30,7 @@ export default function HomeScreen() {
     reload
   } = useCompetitionsList();
 
-  // Service - Configuración de banner
+  // Service - Banner configuration
   const bannerData = getBannerData();
 
   // Loading State
@@ -44,7 +48,10 @@ export default function HomeScreen() {
     );
   }
 
-  // Header Component para la lista
+  /**
+   * Header component for the competitions list
+   * Renders promotional banner at the top
+   */
   const ListHeaderComponent = () => (
     <HomeBanner {...bannerData} />
   );

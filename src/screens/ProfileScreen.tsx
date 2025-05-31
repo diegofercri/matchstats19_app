@@ -14,15 +14,29 @@ import { ProfileMenu } from '@components/profile/ProfileMenu';
 import { LoadingScreen } from '@components/ui/LoadingScreen';
 import { ErrorScreen } from '@components/ui/ErrorScreen';
 
+/**
+ * Profile screen component for user account management
+ * Displays user profile information and provides access to account settings
+ */
 export default function ProfileScreen() {
   const { profile, loading, error, updateProfile, logout } = useProfile();
   const menuItems = getProfileMenuItems();
 
+  /**
+   * Handles edit profile action
+   * Currently shows development placeholder alert
+   */
   const handleEditProfile = () => {
     // TODO: Navigate to edit profile screen
     Alert.alert('Editar Perfil', 'Funcionalidad en desarrollo');
   };
 
+  /**
+   * Handles menu item press events
+   * Routes to appropriate actions based on item ID
+   * 
+   * @param itemId - Menu item identifier
+   */
   const handleMenuItemPress = (itemId: string) => {
     switch (itemId) {
       case 'edit-profile':
@@ -51,6 +65,10 @@ export default function ProfileScreen() {
     }
   };
 
+  /**
+   * Handles logout action with confirmation dialog
+   * Shows confirmation alert before proceeding with logout
+   */
   const handleLogout = () => {
     Alert.alert(
       'Cerrar Sesión',

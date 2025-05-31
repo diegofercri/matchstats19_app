@@ -4,6 +4,13 @@ import { HomeIcon } from "@components/icons/Home";
 import { ProfileIcon } from "@components/icons/Profile";
 import { WebIcon } from "@components/icons/Web";
 
+/**
+ * Tabs layout component for main application navigation
+ * Provides bottom tab navigation with custom icons and screen configurations
+ * Features three main sections: Home, Profile, and Web with icon-only display
+ * 
+ * @returns JSX element containing Tabs navigator with custom icon configuration
+ */
 export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ tabBarShowLabel: false }}>

@@ -16,12 +16,20 @@ import Groups from "@/components/competition/Groups";
 import Knockouts from "@/components/competition/Knockouts";
 import KnockoutBrackets from "@/components/competition/KnockoutBrackets";
 
+/**
+ * Interface for tab option configuration
+ * Defines structure for navigation tabs in competition views
+ */
 export interface TabOption {
   id: string;
   label: string;
   component: React.ComponentType<any>;
 }
 
+/**
+ * Interface for component data structure
+ * Contains all possible data that components might need
+ */
 export interface ComponentData {
   competition?: Competition;
   season?: Season;
@@ -33,6 +41,11 @@ export interface ComponentData {
 
 /**
  * Generates dynamic tab options based on selected season structure
+ * Creates appropriate tabs depending on competition format (league/cup/mixed)
+ * 
+ * @param selectedSeason - Currently selected season data
+ * @param knockoutView - Current knockout view type (list or brackets)
+ * @returns Array of available tab options for the season
  */
 export const generateViewOptions = (
   selectedSeason: Season | null,
@@ -61,7 +74,7 @@ export const generateViewOptions = (
       options.push({ id: "groups", label: "Grupos", component: Groups });
     }
 
-    // AGREGAR STANDINGS PARA FASES DE LIGA
+    // ADD STANDINGS FOR LEAGUE PHASES
     if (hasLeague) {
       const leaguePhases = selectedSeason.phases.filter(phase => phase.type === "league");
       const hasStandings = leaguePhases.some(phase => 
@@ -69,14 +82,11 @@ export const generateViewOptions = (
       );
       
       if (hasStandings) {
-        console.log(`✅ Agregando pestaña Clasificación - ${leaguePhases[0].standings?.length} equipos`);
         options.push({
           id: "standings",
           label: "Clasificación",
           component: Standings,
         });
-      } else {
-        console.log(`⚠️ No se agregó Clasificación - sin standings en fases de liga`);
       }
     }
 
@@ -91,25 +101,25 @@ export const generateViewOptions = (
     }
   } else if (selectedSeason?.standings && selectedSeason.standings.length > 0) {
     // Traditional season structure (like LaLiga) - LEGACY
-    console.log(`✅ Agregando pestaña Clasificación (legacy) - ${selectedSeason.standings.length} equipos`);
     options.push({
       id: "standings",
       label: "Clasificación",
       component: Standings,
     });
-  } else {
-    console.log(`⚠️ No se encontraron standings para mostrar pestaña Clasificación`);
   }
 
   // OVERVIEW - Always last
   options.push({ id: "overview", label: "Información", component: Overview });
 
-  console.log(`🎯 Pestañas generadas: ${options.map(o => o.label).join(', ')}`);
   return options;
 };
 
 /**
  * Checks if season has matches available
+ * Verifies both new phase structure and legacy match structure
+ * 
+ * @param selectedSeason - Season to check for matches
+ * @returns True if season has matches, false otherwise
  */
 const hasMatches = (selectedSeason: Season | null): boolean => {
   if (!selectedSeason) return false;
@@ -130,6 +140,12 @@ const hasMatches = (selectedSeason: Season | null): boolean => {
 
 /**
  * Prepares appropriate data for each component based on active view
+ * Extracts relevant data from season structure for each component type
+ * 
+ * @param activeViewId - Currently active view identifier
+ * @param selectedSeason - Current season data
+ * @param competition - Current competition data
+ * @returns Object with data appropriate for the active component
  */
 export const getComponentData = (
   activeViewId: string,
@@ -182,6 +198,11 @@ export const getComponentData = (
 
 /**
  * Validates if a view ID is valid for current options
+ * Checks if the provided view ID exists in available options
+ * 
+ * @param viewId - View ID to validate
+ * @param viewOptions - Available view options
+ * @returns True if view ID is valid, false otherwise
  */
 export const isValidViewId = (
   viewId: string,
@@ -192,6 +213,10 @@ export const isValidViewId = (
 
 /**
  * Gets the first valid view ID from options (prioritizes matches)
+ * Returns default view with preference for matches tab
+ * 
+ * @param viewOptions - Available view options
+ * @returns Default view ID string
  */
 export const getDefaultViewId = (viewOptions: TabOption[]): string => {
   // Prioritize matches if available

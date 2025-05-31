@@ -6,7 +6,7 @@ export default {
     orientation: "portrait",
     // Solo incluir icon si existe el archivo
     // icon: "./assets/icon.png",
-    userInterfaceStyle: "light",
+    userInterfaceStyle: "dark",
     // Configuración básica de splash sin archivo específico
     splash: {
       resizeMode: "contain",

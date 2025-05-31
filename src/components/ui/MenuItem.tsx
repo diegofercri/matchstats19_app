@@ -3,15 +3,27 @@ import { View, Text, StyleSheet, Pressable, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@colors';
 import { ProfileMenuItem } from '@services/profileService';
-import { User } from '@types';
+import { Profile } from '@types';
 
+/**
+ * Props interface for MenuItem component
+ * Defines menu item data, profile context, and interaction handlers
+ */
 interface MenuItemProps {
   item: ProfileMenuItem;
-  profile: User;
+  profile: Profile;
   onPress: (itemId: string) => void;
   isLast?: boolean;
 }
 
+/**
+ * Menu item component for profile settings
+ * Renders individual menu items with icons, text, and appropriate interactive elements
+ * Supports different item types (navigation, toggle) and danger styling
+ * 
+ * @param props - Menu item properties including item data and interaction handlers
+ * @returns JSX element containing interactive menu item with icon and controls
+ */
 export const MenuItem = ({ item, profile, onPress }: MenuItemProps) => {
   const isDangerItem = item.section === 'danger';
   const isToggle = item.type === 'toggle';

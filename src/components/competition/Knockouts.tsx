@@ -4,11 +4,23 @@ import { KnockoutRound } from "@types";
 import MatchCard from "./MatchCard";
 import { useKnockoutRounds } from "@hooks/useKnockoutRounds";
 
+/**
+ * Props interface for Knockouts component
+ * Defines knockout rounds data and customization options
+ */
 interface KnockoutsProps {
   rounds?: KnockoutRound[];
   emptyMessage?: string;
 }
 
+/**
+ * Knockouts component for displaying knockout phase rounds and matches
+ * Shows organized knockout rounds with matches or appropriate empty states
+ * Features multiple fallback states for different scenarios
+ * 
+ * @param props - Knockouts properties including rounds data and empty message
+ * @returns JSX element containing knockout rounds or empty state messages
+ */
 const Knockouts = ({
   rounds,
   emptyMessage = "No hay rondas eliminatorias disponibles.",
@@ -42,11 +54,22 @@ const Knockouts = ({
   );
 };
 
-// Separate component for knockout round section
+/**
+ * Props interface for KnockoutRoundSection component
+ * Defines knockout round data for individual round display
+ */
 interface KnockoutRoundSectionProps {
   round: KnockoutRound;
 }
 
+/**
+ * Knockout round section component for displaying individual rounds
+ * Shows round title and matches or placeholder for upcoming matches
+ * Handles empty match states with informative messaging
+ * 
+ * @param props - Round section properties including round data
+ * @returns JSX element containing round title and matches or placeholder
+ */
 const KnockoutRoundSection = ({ round }: KnockoutRoundSectionProps) => (
   <View style={styles.roundSection}>
     <Text style={styles.roundTitle}>{round.name}</Text>
@@ -58,11 +81,21 @@ const KnockoutRoundSection = ({ round }: KnockoutRoundSectionProps) => (
   </View>
 );
 
-// Separate component for round matches
+/**
+ * Props interface for RoundMatches component
+ * Defines matches array for round match display
+ */
 interface RoundMatchesProps {
   matches: any[];
 }
 
+/**
+ * Round matches component for displaying matches within a round
+ * Renders individual match cards for all matches in the round
+ * 
+ * @param props - Round matches properties including matches array
+ * @returns JSX fragment containing match cards
+ */
 const RoundMatches = ({ matches }: RoundMatchesProps) => (
   <>
     {matches.map((match) => (
@@ -71,7 +104,12 @@ const RoundMatches = ({ matches }: RoundMatchesProps) => (
   </>
 );
 
-// Separate component for no matches placeholder
+/**
+ * No matches placeholder component for rounds without defined matches
+ * Shows informative message when matches are not yet available
+ * 
+ * @returns JSX element containing placeholder message for upcoming matches
+ */
 const NoMatchesPlaceholder = () => (
   <View style={styles.noMatchesContainer}>
     <Text style={styles.noMatchesText}>

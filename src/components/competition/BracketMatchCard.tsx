@@ -3,10 +3,22 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { colors } from '@colors';
 import { AggregatedMatch, getMatchStatusDisplay } from '@utils/bracketUtils';
 
+/**
+ * Props interface for BracketMatchCard component
+ * Defines aggregated match data for bracket display
+ */
 interface BracketMatchCardProps {
   match: AggregatedMatch;
 }
 
+/**
+ * Bracket match card component for tournament bracket visualization
+ * Displays match information with team rows, scores, and winner highlighting
+ * Features compact design optimized for bracket layout with status indicators
+ * 
+ * @param props - Bracket match card properties containing aggregated match data
+ * @returns JSX element containing compact match card with team information and scores
+ */
 export const BracketMatchCard = ({ match }: BracketMatchCardProps) => {
   const isFinished = match.status === 'FINALIZADO';
   const statusDisplay = getMatchStatusDisplay(match);
@@ -36,7 +48,10 @@ export const BracketMatchCard = ({ match }: BracketMatchCardProps) => {
   );
 };
 
-// Separate component for team row
+/**
+ * Props interface for TeamRow component
+ * Defines team information and display state for individual team rows
+ */
 interface TeamRowProps {
   team: {
     id: string;
@@ -48,6 +63,14 @@ interface TeamRowProps {
   isFinished: boolean;
 }
 
+/**
+ * Team row component for displaying individual team information within bracket cards
+ * Shows team logo/placeholder, name, and score with winner highlighting
+ * Features dynamic styling based on match outcome
+ * 
+ * @param props - Team row properties including team data and display state
+ * @returns JSX element containing team information row with conditional winner styling
+ */
 const TeamRow = ({ team, isWinner, isFinished }: TeamRowProps) => (
   <View style={[styles.teamRow, isWinner && styles.winnerRow]}>
     <View style={styles.teamInfo}>
@@ -64,7 +87,10 @@ const TeamRow = ({ team, isWinner, isFinished }: TeamRowProps) => (
   </View>
 );
 
-// Separate component for team logo
+/**
+ * Props interface for TeamLogo component
+ * Defines team information for logo display
+ */
 interface TeamLogoProps {
   team: {
     name: string;
@@ -72,6 +98,14 @@ interface TeamLogoProps {
   };
 }
 
+/**
+ * Team logo component with fallback to team initials
+ * Displays team logo image or generates initials placeholder for compact display
+ * Features small circular design optimized for bracket cards
+ * 
+ * @param props - Team logo properties including team name and optional logo URL
+ * @returns JSX element containing team logo image or initials placeholder
+ */
 const TeamLogo = ({ team }: TeamLogoProps) => (
   <>
     {team.logo ? (

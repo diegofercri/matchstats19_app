@@ -2,13 +2,28 @@ import { View, Text, StyleSheet } from "react-native";
 import { colors } from "@colors";
 import { Competition, Season } from "@types";
 
+/**
+ * Props interface for Overview component
+ * Defines competition and optional season data for display
+ */
 interface OverviewProps {
   competition: Competition;
   season?: Season;
 }
 
+/**
+ * Overview component displaying competition and season information
+ * Shows detailed information in card-based layout with description, dates, and details
+ * Handles missing data gracefully with fallback messages
+ * 
+ * @param props - Overview properties containing competition and optional season data
+ * @returns JSX element containing competition overview with multiple information cards
+ */
 const Overview = ({ competition, season }: OverviewProps) => {
-  // Handle missing data gracefully
+  /**
+   * Handle missing data gracefully
+   * Shows empty state when competition data is not available
+   */
   if (!competition) {
     return (
       <View style={styles.emptyContainer}>
@@ -21,6 +36,13 @@ const Overview = ({ competition, season }: OverviewProps) => {
   const startDate = season?.startDate || competition.startDate;
   const endDate = season?.endDate || competition.endDate;
 
+  /**
+   * Formats date string to Spanish locale format
+   * Handles invalid dates gracefully with fallback message
+   * 
+   * @param dateString - Date string to format
+   * @returns Formatted date string or fallback message
+   */
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString("es-ES", {
@@ -35,7 +57,7 @@ const Overview = ({ competition, season }: OverviewProps) => {
 
   return (
     <View style={styles.container}>
-      {/* Descripción Card */}
+      {/* Description Card */}
       {description && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Descripción</Text>
@@ -43,7 +65,7 @@ const Overview = ({ competition, season }: OverviewProps) => {
         </View>
       )}
 
-      {/* Fechas Card */}
+      {/* Dates Card */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Información de Fechas</Text>
 
@@ -62,7 +84,7 @@ const Overview = ({ competition, season }: OverviewProps) => {
         </View>
       </View>
 
-      {/* Temporada Card (si existe) */}
+      {/* Season Card (if exists) */}
       {season && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Temporada Actual</Text>
@@ -70,7 +92,7 @@ const Overview = ({ competition, season }: OverviewProps) => {
         </View>
       )}
 
-      {/* Información adicional Card */}
+      {/* Additional information Card */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Detalles de la Competición</Text>
 
@@ -80,7 +102,7 @@ const Overview = ({ competition, season }: OverviewProps) => {
         </View>
 
         {/*
-        // Organizador 
+        // Organizer 
         {competition.organizer && (
           <View style={styles.infoRow}>
             <Text style={styles.label}>Organizador:</Text>
@@ -88,7 +110,7 @@ const Overview = ({ competition, season }: OverviewProps) => {
           </View>
         )}
 
-        // Ubicación
+        // Location
         {competition.location && (
           <View style={styles.infoRow}>
             <Text style={styles.label}>Ubicación:</Text>

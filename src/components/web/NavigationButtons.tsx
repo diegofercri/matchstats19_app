@@ -3,6 +3,10 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@colors';
 
+/**
+ * Props interface for NavigationButtons component
+ * Defines navigation state and callback functions for back/forward controls
+ */
 interface NavigationButtonsProps {
   canGoBack: boolean;
   canGoForward: boolean;
@@ -10,6 +14,14 @@ interface NavigationButtonsProps {
   onGoForward: () => void;
 }
 
+/**
+ * Navigation buttons component for WebView controls
+ * Provides back and forward navigation buttons with disabled state handling
+ * Uses circular design with dynamic styling based on navigation availability
+ * 
+ * @param props - Navigation properties including state and callback functions
+ * @returns JSX element containing back and forward navigation buttons
+ */
 export const NavigationButtons = ({ 
   canGoBack, 
   canGoForward, 

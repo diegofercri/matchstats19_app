@@ -3,10 +3,22 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { Competition } from "@types";
 import { colors } from "@colors";
 
+/**
+ * Props interface for Header component
+ * Defines competition data for header display
+ */
 interface HeaderProps {
   competition: Competition;
 }
 
+/**
+ * Header component for competition detail screens
+ * Displays competition logo and title with elegant styling and shadows
+ * Features centered layout with prominent competition branding
+ * 
+ * @param props - Header properties containing competition data
+ * @returns JSX element containing competition image and title header
+ */
 export function Header({ competition }: HeaderProps) {
   return (
     <>

@@ -3,15 +3,27 @@ import { Link } from "expo-router";
 import { Competition } from "@types";
 import { colors, componentThemes } from "@colors";
 
+/**
+ * Props interface for CompetitionListItem component
+ * Defines competition data for list item display
+ */
 type CompetitionListItemProps = {
   competition: Competition;
 };
 
+/**
+ * Competition list item component for displaying individual competitions
+ * Features card design with competition image, name, and description
+ * Navigates to competition detail screen when pressed
+ * 
+ * @param props - Competition list item properties containing competition data
+ * @returns JSX element containing pressable competition card with navigation
+ */
 export default function CompetitionListItem({
   competition,
 }: CompetitionListItemProps) {
   return (
-    <Link href={{ pathname: `/home/competition/${competition.id}` }} asChild>
+    <Link href={`/home/competition/${competition.id}`} asChild>
       <Pressable style={styles.container}>
         <View style={styles.card}>
           <Image
@@ -48,12 +60,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     gap: 20,
-    // Sombra para iOS
+    // Shadow for iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    // Elevación para Android
+    // Elevation for Android
     elevation: 3,
   },
   image: {

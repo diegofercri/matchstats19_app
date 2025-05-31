@@ -3,6 +3,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { colors } from "@/theme/colors";
 
+/**
+ * Props interface for Banner component
+ * Defines promotional banner content and display properties
+ */
 type BannerProps = {
   title: string;
   slug: string;
@@ -10,7 +14,20 @@ type BannerProps = {
   imageUrl: string;
 };
 
+/**
+ * Promotional banner component with gradient background
+ * Displays tournament/competition information with attractive visual design
+ * Features gradient background, badge, title, date, and promotional image
+ * Navigates to web view when pressed
+ * 
+ * @param props - Banner content including title, slug, date, and image URL
+ * @returns JSX element containing pressable promotional banner
+ */
 const Banner = ({ title, slug, date, imageUrl }: BannerProps) => {
+  /**
+   * Handles banner press action
+   * Navigates to web view screen using expo-router
+   */
   const handlePress = () => {
     router.push("/web");
   };

@@ -2,14 +2,26 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@colors';
-import { User } from '@types';
+import { Profile } from '@types';
 import { getInitials } from '@services/profileService';
 
+/**
+ * Props interface for ProfileHeader component
+ * Defines profile data and edit interaction handler
+ */
 interface ProfileHeaderProps {
-  profile: User;
+  profile: Profile;
   onEditPress: () => void;
 }
 
+/**
+ * Profile header component displaying user information
+ * Shows profile image/avatar, name, and email with edit functionality
+ * Features circular profile image with camera edit button overlay
+ * 
+ * @param props - Profile header properties including user data and edit handler
+ * @returns JSX element containing profile image, user info, and edit button
+ */
 export function ProfileHeader({ profile, onEditPress }: ProfileHeaderProps) {
   return (
     <View style={styles.headerContainer}>
@@ -28,11 +40,22 @@ export function ProfileHeader({ profile, onEditPress }: ProfileHeaderProps) {
   );
 }
 
-// Separate component for profile image
+/**
+ * Props interface for ProfileImage component
+ * Defines profile data for image display
+ */
 interface ProfileImageProps {
-  profile: User;
+  profile: Profile;
 }
 
+/**
+ * Profile image component with fallback to initials
+ * Displays user profile image or generates initials placeholder
+ * Features circular design with border styling
+ * 
+ * @param props - Profile data for image source or initials generation
+ * @returns JSX element containing profile image or initials placeholder
+ */
 const ProfileImage = ({ profile }: ProfileImageProps) => (
   <View style={styles.imageContainer}>
     {profile.image ? (

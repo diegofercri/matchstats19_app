@@ -1,6 +1,14 @@
 import { Svg, Path, SvgProps } from 'react-native-svg';
 import { colors } from '@colors';
 
+/**
+ * Home icon component using SVG
+ * Displays a house icon with roof, walls, and door details
+ * Features layered design with semi-transparent house structure and solid door element
+ * 
+ * @param props - SVG properties including optional fill color and standard SVG attributes
+ * @returns JSX element containing SVG home/house icon
+ */
 export function HomeIcon({ fill = colors.interactive.primary, ...props }: SvgProps) {
   return (
     <Svg

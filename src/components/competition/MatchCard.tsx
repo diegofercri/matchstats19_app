@@ -4,11 +4,23 @@ import { Match } from "@types";
 import { useMatchStatus } from "@hooks/useMatchStatus";
 import { useMatchFormatting } from "@hooks/useMatchFormatting";
 
+/**
+ * Props interface for MatchCard component
+ * Defines match data and display options for individual match cards
+ */
 interface MatchCardProps {
   match: Match;
   showRound?: boolean;
 }
 
+/**
+ * Match card component for displaying individual match information
+ * Features team logos, scores, date/time, and match status with dynamic styling
+ * Supports optional round display and live match highlighting
+ * 
+ * @param props - Match card properties including match data and display options
+ * @returns JSX element containing complete match information card
+ */
 const MatchCard = ({ match, showRound = false }: MatchCardProps) => {
   const { statusBadgeStyle, statusText, isLiveMatch } = useMatchStatus(match);
 
@@ -38,7 +50,10 @@ const MatchCard = ({ match, showRound = false }: MatchCardProps) => {
   );
 };
 
-// Separate component for team section
+/**
+ * Props interface for TeamSection component
+ * Defines team information for logo and name display
+ */
 interface TeamSectionProps {
   team: {
     name: string;
@@ -46,6 +61,14 @@ interface TeamSectionProps {
   };
 }
 
+/**
+ * Team section component displaying team logo and name
+ * Shows team logo or initials placeholder with team name below
+ * Features responsive design with logo fallback handling
+ * 
+ * @param props - Team section properties including team data
+ * @returns JSX element containing team logo/placeholder and name
+ */
 const TeamSection = ({ team }: TeamSectionProps) => (
   <View style={styles.teamContainer}>
     <View style={styles.shieldContainer}>
@@ -69,7 +92,10 @@ const TeamSection = ({ team }: TeamSectionProps) => (
   </View>
 );
 
-// Separate component for match center info
+/**
+ * Props interface for MatchCenter component
+ * Defines central match information including time, score, and status
+ */
 interface MatchCenterProps {
   date: string;
   time: string;
@@ -79,6 +105,14 @@ interface MatchCenterProps {
   statusText: string;
 }
 
+/**
+ * Match center component displaying core match information
+ * Shows date, time, score, and status with dynamic styling for live matches
+ * Features highlighted display for ongoing matches
+ * 
+ * @param props - Match center properties including timing, score, and status data
+ * @returns JSX element containing central match information with status badge
+ */
 const MatchCenter = ({
   date,
   time,

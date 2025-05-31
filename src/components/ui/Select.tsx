@@ -4,12 +4,20 @@ import { View, Text, StyleSheet, Pressable, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@colors";
 
+/**
+ * Interface for select option items
+ * Defines structure for dropdown options with labels, values, and disabled state
+ */
 export interface SelectOption {
   label: string;
   value: string;
   isDisabled?: boolean;
 }
 
+/**
+ * Props interface for Select component
+ * Defines configuration options for dropdown selector behavior and appearance
+ */
 interface SelectProps {
   options: SelectOption[];
   selectedValue?: string;
@@ -19,6 +27,14 @@ interface SelectProps {
   width?: number;
 }
 
+/**
+ * Custom select dropdown component with modal overlay
+ * Provides native-like dropdown functionality with customizable options
+ * Features modal-based dropdown, disabled states, and precise positioning
+ * 
+ * @param props - Select component properties including options and handlers
+ * @returns JSX element containing trigger button and modal dropdown
+ */
 function Select({
   options,
   selectedValue,
@@ -35,19 +51,32 @@ function Select({
   const selectedOption = options.find(option => option.value === defaultValue);
   const displayText = selectedOption ? selectedOption.label : placeholder;
   
+  /**
+   * Handles option selection
+   * Updates selected value and closes dropdown
+   * 
+   * @param value - Selected option value
+   */
   const handleSelect = (value: string) => {
     onValueChange(value);
     setIsOpen(false);
   };
 
+  /**
+   * Closes the dropdown modal
+   */
   const closeDropdown = () => {
     setIsOpen(false);
   };
 
+  /**
+   * Handles trigger button press
+   * Measures trigger position and opens/closes dropdown accordingly
+   */
   const handleTriggerPress = () => {
     if (!disabled) {
       if (!isOpen) {
-        // Medir la posición del trigger antes de abrir
+        // Measure trigger position before opening
         triggerRef.current?.measureInWindow((x, y, width, height) => {
           setTriggerLayout({ x, y, width, height });
           setIsOpen(true);
@@ -77,7 +106,7 @@ function Select({
         />
       </Pressable>
 
-      {/* Modal overlay para detectar clics fuera */}
+      {/* Modal overlay for detecting outside clicks */}
       <Modal
         visible={isOpen}
         transparent={true}

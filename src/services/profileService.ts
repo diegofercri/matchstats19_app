@@ -1,11 +1,17 @@
-// Profile configuration and utilities
+/**
+ * Profile configuration constants
+ * Defines limits and default settings for user profiles
+ */
 export const PROFILE_CONFIG = {
   maxAvatarSize: 5 * 1024 * 1024, // 5MB
   supportedImageTypes: ['image/jpeg', 'image/png', 'image/webp'],
   defaultLanguage: 'es',
 } as const;
 
-// Profile menu sections
+/**
+ * Interface for profile menu items
+ * Defines structure for navigation and action items in profile menu
+ */
 export interface ProfileMenuItem {
   id: string;
   title: string;
@@ -14,6 +20,12 @@ export interface ProfileMenuItem {
   section: 'account' | 'preferences' | 'support' | 'danger';
 }
 
+/**
+ * Returns array of profile menu items organized by sections
+ * Provides complete menu structure for user profile interface
+ * 
+ * @returns Array of profile menu items with Spanish labels for UI
+ */
 export const getProfileMenuItems = (): ProfileMenuItem[] => [
   // Account section
   {
@@ -73,12 +85,24 @@ export const getProfileMenuItems = (): ProfileMenuItem[] => [
   }
 ];
 
-// Utility functions
+/**
+ * Validates email format using regex pattern
+ * 
+ * @param email - Email string to validate
+ * @returns True if email format is valid, false otherwise
+ */
 export const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
+/**
+ * Generates initials from a full name
+ * Takes first letter of first two words
+ * 
+ * @param name - Full name string
+ * @returns Initials (max 2 characters) in uppercase
+ */
 export const getInitials = (name: string): string => {
   return name
     .split(' ')
@@ -87,6 +111,13 @@ export const getInitials = (name: string): string => {
     .join('');
 };
 
+/**
+ * Formats a date into a human-readable "last seen" string
+ * Returns relative time in Spanish for UI display
+ * 
+ * @param date - Date to format
+ * @returns Formatted relative time string in Spanish
+ */
 export const formatLastSeen = (date: Date): string => {
   const now = new Date();
   const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));

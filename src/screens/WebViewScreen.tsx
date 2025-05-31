@@ -12,13 +12,15 @@ import { WEBVIEW_CONFIG } from '@services/webViewService';
 // Components
 import { WebViewControls } from '@components/web/WebViewControls';
 
+/**
+ * WebView screen component for displaying web content
+ * Provides full-featured web browsing with navigation controls and loading states
+ */
 export default function WebViewScreen() {
   const {
     webViewRef,
     canGoBack,
     canGoForward,
-    isLoading,
-    currentUrl,
     goBack,
     goForward,
     reload,
@@ -46,7 +48,6 @@ export default function WebViewScreen() {
       <WebViewControls
         canGoBack={canGoBack}
         canGoForward={canGoForward}
-        isLoading={isLoading}
         onGoBack={goBack}
         onGoForward={goForward}
         onReload={reload}

@@ -3,6 +3,10 @@ import { View, StyleSheet } from 'react-native';
 import { NavigationButtons } from '@components/web/NavigationButtons';
 import { ReloadButton } from '@components/web/ReloadButton';
 
+/**
+ * Props interface for WebViewControls component
+ * Defines navigation state and callback functions for WebView controls
+ */
 interface WebViewControlsProps {
   canGoBack: boolean;
   canGoForward: boolean;
@@ -11,6 +15,14 @@ interface WebViewControlsProps {
   onReload: () => void;
 }
 
+/**
+ * WebView controls overlay component
+ * Provides floating navigation and reload controls for WebView interface
+ * Positioned as absolute overlay with navigation buttons and reload functionality
+ * 
+ * @param props - WebView control properties and callback functions
+ * @returns JSX element containing navigation and reload controls
+ */
 export function WebViewControls({
   canGoBack,
   canGoForward,

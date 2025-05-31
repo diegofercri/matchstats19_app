@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { Match, Season } from '@/types';
 import footballService from '@/services/footballService';
 
+/**
+ * Return type interface for useMatchesData hook
+ * Defines matches data state and control functions
+ */
 interface UseMatchesDataReturn {
   matches: Match[];
   loading: boolean;
@@ -10,6 +14,15 @@ interface UseMatchesDataReturn {
   refreshMatches: () => Promise<void>;
 }
 
+/**
+ * Custom hook for managing matches data for competitions
+ * Handles loading matches from season structure or fetching from API when needed
+ * Prioritizes phase-based structure over legacy matches field
+ * 
+ * @param competitionId - Competition identifier
+ * @param season - Selected season data
+ * @returns Object containing matches data, loading state, and refresh function
+ */
 export const useMatchesData = (
   competitionId: string | undefined,
   season: Season | null
@@ -18,12 +31,15 @@ export const useMatchesData = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Extraer matches de la season (priorizando phases)
+  /**
+   * Extract matches from season data (prioritizing phases structure)
+   * Processes all phase types: groups, knockout, and league
+   */
   const seasonMatches = useMemo(() => {
     if (!season) return [];
     
     if (season.phases) {
-      // Extraer matches de todas las fases
+      // Extract matches from all phases
       return season.phases.flatMap(phase => {
         if (phase.type === 'groups') {
           return phase.groups?.flatMap(group => group.matches) || [];
@@ -39,18 +55,26 @@ export const useMatchesData = (
     return season.matches || [];
   }, [season]);
 
+  /**
+   * Effect to handle matches data loading
+   * Uses existing season data or fetches from API when necessary
+   */
   useEffect(() => {
     if (seasonMatches.length > 0) {
-      // Si ya tenemos matches en la season, usarlos
+      // If we already have matches in season, use them
       setMatches(seasonMatches);
     } else if (competitionId && season) {
-      // Si no hay matches, intentar cargarlos
+      // If no matches available, try to load them
       loadMatches();
     } else {
       setMatches([]);
     }
   }, [competitionId, season, seasonMatches]);
 
+  /**
+   * Loads matches data from API
+   * Fetches fresh matches data for the current competition and season
+   */
   const loadMatches = async (): Promise<void> => {
     if (!competitionId || !season) return;
 
@@ -74,12 +98,15 @@ export const useMatchesData = (
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar partidos';
       setError(errorMessage);
-      console.error('❌ Error loading matches:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Refreshes matches data by reloading from API
+   * Used for manual refresh or pull-to-refresh functionality
+   */
   const refreshMatches = async (): Promise<void> => {
     await loadMatches();
   };

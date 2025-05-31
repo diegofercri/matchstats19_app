@@ -1,3 +1,7 @@
+/**
+ * Interface representing banner data structure
+ * Contains all necessary information for displaying promotional banners
+ */
 export interface BannerData {
   title: string;
   slug: string;
@@ -5,6 +9,12 @@ export interface BannerData {
   imageUrl: string;
 }
 
+/**
+ * Returns current banner data for the application
+ * Currently provides static data for Staff Cup II tournament
+ * 
+ * @returns Static banner data object
+ */
 export const getBannerData = (): BannerData => {
   return {
     title: "Staff Cup II",
@@ -15,19 +25,19 @@ export const getBannerData = (): BannerData => {
 };
 
 /*
-// Función para futuras mejoras - banners dinámicos
+// Future enhancement functions - dynamic banners
 export const getActiveBanner = async (): Promise<BannerData> => {
-  // Aquí podrías hacer una llamada a la API
+  // Here you could make an API call
   // const response = await api.get('/banners/active');
   // return response.data;
   
-  // Por ahora retorna el banner estático
+  // For now returns static banner
   return getBannerData();
 };
 
-// Función para obtener múltiples banners (para carrusel)
+// Function to get multiple banners (for carousel)
 export const getAllBanners = async (): Promise<BannerData[]> => {
-  // Placeholder para múltiples banners
+  // Placeholder for multiple banners
   return [getBannerData()];
 };
 */

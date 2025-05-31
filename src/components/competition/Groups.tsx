@@ -2,10 +2,22 @@ import { View, Text, StyleSheet } from "react-native";
 import { colors } from "@colors";
 import { Group } from "@types";
 
+/**
+ * Props interface for Groups component
+ * Defines optional groups data for tournament phase display
+ */
 interface GroupsProps {
   groups?: Group[];
 }
 
+/**
+ * Groups component for displaying tournament group phase standings
+ * Shows multiple groups with standings tables or appropriate empty states
+ * Features complete table layout with team positions, statistics, and points
+ * 
+ * @param props - Groups properties containing optional groups data
+ * @returns JSX element containing group cards with standings tables or empty state
+ */
 const Groups = ({ groups }: GroupsProps) => {
   if (!groups || groups.length === 0) {
     return (

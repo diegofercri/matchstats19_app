@@ -1,9 +1,17 @@
+/**
+ * Interface representing a football team
+ * Contains basic team information used throughout the application
+ */
 export interface Team {
   id: string;
   name: string;
   logo: string;
 }
 
+/**
+ * Interface representing a team within a specific match context
+ * Extends basic team info with match-specific score data
+ */
 export interface TeamInMatch {
   id: string;
   name: string;
@@ -11,6 +19,10 @@ export interface TeamInMatch {
   score: number | null;
 }
 
+/**
+ * Interface containing comprehensive team statistics
+ * Includes match record, goals, points, and recent form
+ */
 export interface TeamStats {
   team: Team;
   totalMatches: number;
@@ -23,4 +35,8 @@ export interface TeamStats {
   recentForm: FormResult[];
 }
 
+/**
+ * Type representing match results for team form tracking
+ * G = Ganado (Won), E = Empatado (Draw), P = Perdido (Lost)
+ */
 export type FormResult = 'G' | 'E' | 'P'; // Ganado, Empatado, Perdido

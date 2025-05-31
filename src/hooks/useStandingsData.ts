@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { StandingEntry, Season } from '@/types';
 import footballService from '@/services/footballService';
 
+/**
+ * Return type interface for useStandingsData hook
+ * Defines standings data state and control functions
+ */
 interface UseStandingsDataReturn {
   standings: StandingEntry[];
   loading: boolean;
@@ -10,6 +14,14 @@ interface UseStandingsDataReturn {
   refreshStandings: () => Promise<void>;
 }
 
+/**
+ * Custom hook for managing standings data for competitions
+ * Handles loading standings from season data or fetching from API when needed
+ * 
+ * @param competitionId - Competition identifier
+ * @param season - Selected season data
+ * @returns Object containing standings data, loading state, and refresh function
+ */
 export const useStandingsData = (
   competitionId: string | undefined,
   season: Season | null
@@ -18,12 +30,15 @@ export const useStandingsData = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Extraer standings de la season
+  /**
+   * Extract standings from season data
+   * Checks both phase-based structure and legacy standings field
+   */
   const seasonStandings = useMemo(() => {
     if (!season) return [];
     
     if (season.phases) {
-      // Buscar standings en fases de tipo 'league'
+      // Look for standings in 'league' type phases
       const leaguePhases = season.phases.filter(phase => phase.type === 'league');
       return leaguePhases.flatMap(phase => phase.standings || []);
     }
@@ -31,18 +46,26 @@ export const useStandingsData = (
     return season.standings || [];
   }, [season]);
 
+  /**
+   * Effect to handle standings data loading
+   * Uses existing season data or fetches from API when necessary
+   */
   useEffect(() => {
     if (seasonStandings.length > 0) {
-      // Si ya tenemos standings en la season, usarlos
+      // If we already have standings in season, use them
       setStandings(seasonStandings);
     } else if (competitionId && season) {
-      // Si no hay standings, intentar cargarlos
+      // If no standings available, try to load them
       loadStandings();
     } else {
       setStandings([]);
     }
   }, [competitionId, season, seasonStandings]);
 
+  /**
+   * Loads standings data from API
+   * Fetches fresh standings data for the current competition and season
+   */
   const loadStandings = async (): Promise<void> => {
     if (!competitionId || !season) return;
 
@@ -62,12 +85,15 @@ export const useStandingsData = (
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar clasificación';
       setError(errorMessage);
-      console.error('❌ Error loading standings:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Refreshes standings data by reloading from API
+   * Used for manual refresh or pull-to-refresh functionality
+   */
   const refreshStandings = async (): Promise<void> => {
     await loadStandings();
   };

@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Match, StandingEntry, Season } from '@/types';
 import footballService from '@/services/footballService';
 
+/**
+ * Return type interface for useSeasonData hook
+ * Defines season data state, filtering functions, and control methods
+ */
 interface UseSeasonDataReturn {
   matches: Match[];
   standings: StandingEntry[];
@@ -14,6 +18,15 @@ interface UseSeasonDataReturn {
   getMatchesByStatus: (status: string) => Match[];
 }
 
+/**
+ * Custom hook for managing comprehensive season data
+ * Handles matches, standings, and rounds from season structure or API
+ * Provides filtering utilities and refresh capabilities
+ * 
+ * @param competitionId - Competition identifier
+ * @param season - Selected season data
+ * @returns Object containing season data, loading state, and utility functions
+ */
 export const useSeasonData = (
   competitionId: string | undefined,
   season: Season | null
@@ -24,7 +37,10 @@ export const useSeasonData = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Extraer datos de la season si ya están disponibles
+  /**
+   * Extract data from season structure if available
+   * Processes both phase-based and legacy season data structures
+   */
   const seasonData = useMemo(() => {
     if (!season) return { matches: [], standings: [], rounds: [] };
     
@@ -32,7 +48,7 @@ export const useSeasonData = (
     let allStandings: StandingEntry[] = [];
     
     if (season.phases) {
-      // Extraer de fases
+      // Extract from phases structure
       season.phases.forEach(phase => {
         if (phase.type === 'league') {
           allMatches.push(...(phase.matches || []));
@@ -49,12 +65,12 @@ export const useSeasonData = (
         }
       });
     } else {
-      // Usar datos legacy
+      // Use legacy data structure
       allMatches = season.matches || [];
       allStandings = season.standings || [];
     }
     
-    // Extraer rondas únicas
+    // Extract unique rounds from matches
     const uniqueRounds = [...new Set(allMatches.map(match => match.round))];
     
     return {
@@ -64,23 +80,31 @@ export const useSeasonData = (
     };
   }, [season]);
 
+  /**
+   * Effect to handle season data loading
+   * Uses existing season data or fetches additional data from API
+   */
   useEffect(() => {
     if (seasonData.matches.length > 0) {
-      // Usar datos de la season
+      // Use data from season structure
       setMatches(seasonData.matches);
       setStandings(seasonData.standings);
       setRounds(seasonData.rounds);
     } else if (competitionId && season) {
-      // Cargar datos adicionales si no están en la season
+      // Load additional data if not available in season
       loadAdditionalData();
     } else {
-      // Limpiar datos
+      // Clear data when no season selected
       setMatches([]);
       setStandings([]);
       setRounds([]);
     }
   }, [competitionId, season, seasonData]);
 
+  /**
+   * Loads additional season data from API
+   * Fetches matches, standings, and rounds in parallel for better performance
+   */
   const loadAdditionalData = async (): Promise<void> => {
     if (!competitionId || !season) return;
 
@@ -95,9 +119,7 @@ export const useSeasonData = (
         throw new Error('IDs inválidos');
       }
 
-      console.log(`📋 Cargando datos adicionales: Liga ${leagueId}, Temporada ${seasonYear}`);
-
-      // Cargar en paralelo
+      // Load data in parallel for better performance
       const [matchesData, standingsData, roundsData] = await Promise.all([
         footballService.getMatches({ league: leagueId, season: seasonYear }),
         footballService.getStandings(leagueId, seasonYear),
@@ -111,20 +133,37 @@ export const useSeasonData = (
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar datos de temporada';
       setError(errorMessage);
-      console.error('❌ Error loading season data:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Refreshes season data by reloading from API
+   * Used for manual refresh or pull-to-refresh functionality
+   */
   const refreshSeasonData = async (): Promise<void> => {
     await loadAdditionalData();
   };
 
+  /**
+   * Filters matches by specific round
+   * Returns all matches that belong to the specified round
+   * 
+   * @param round - Round name to filter by
+   * @returns Array of matches for the specified round
+   */
   const getMatchesByRound = useCallback((round: string): Match[] => {
     return matches.filter(match => match.round === round);
   }, [matches]);
 
+  /**
+   * Filters matches by status
+   * Returns all matches with the specified status
+   * 
+   * @param status - Match status to filter by
+   * @returns Array of matches with the specified status
+   */
   const getMatchesByStatus = useCallback((status: string): Match[] => {
     return matches.filter(match => match.status === status);
   }, [matches]);

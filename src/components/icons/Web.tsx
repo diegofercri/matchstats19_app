@@ -1,6 +1,14 @@
 import { Svg, Path, G, SvgProps } from 'react-native-svg';
 import { colors } from '@colors';
 
+/**
+ * Web/Globe icon component using SVG
+ * Displays a stylized globe icon representing web or internet functionality
+ * Features circular globe outline with meridian lines for geographical representation
+ * 
+ * @param props - SVG properties including optional fill color and standard SVG attributes
+ * @returns JSX element containing SVG web/globe icon
+ */
 export function WebIcon({ fill = colors.interactive.primary, ...props }: SvgProps) {
   return (
     <Svg

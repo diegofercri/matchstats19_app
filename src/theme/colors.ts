@@ -1,54 +1,65 @@
-// colors/palette.ts
+// theme/colors.ts
+
+/**
+ * Color palette definition for the application
+ * Contains all color tokens organized by category and usage
+ */
 export const colors = {
-  // Backgrounds
+  // Background colors for different surfaces
   background: {
-    primary: '#121212',      // Fondo principal de la app
-    secondary: '#1e1e1e',    // Fondo de tarjetas y contenedores
-    tertiary: '#404040',     // Fondo de headers y elementos destacados
-    surface: '#202020',      // Fondo de elementos interactivos
+    primary: '#121212',      // Main app background
+    secondary: '#1e1e1e',    // Cards and containers background
+    tertiary: '#404040',     // Headers and highlighted elements background
+    surface: '#202020',      // Interactive elements background
   },
   
-  // Text colors
+  // Text colors for different hierarchy levels
   text: {
-    primary: '#ffffff',      // Texto principal (blanco puro)
-    secondary: '#e7e7e7',    // Texto secundario (gris muy claro)
-    tertiary: '#b8b8b8',     // Texto terciario (gris medio)
-    muted: '#9e9e9e',        // Texto deshabilitado/sutil
+    primary: '#ffffff',      // Primary text (pure white)
+    secondary: '#e7e7e7',    // Secondary text (very light gray)
+    tertiary: '#b8b8b8',     // Tertiary text (medium gray)
+    muted: '#9e9e9e',        // Disabled/subtle text
   },
   
-  // Border colors
+  // Border colors for visual separation
   border: {
-    primary: '#404040',      // Bordes principales
-    secondary: '#333333',    // Bordes secundarios/separadores
-    muted: '#2a2a2a',        // Bordes sutiles
+    primary: '#404040',      // Primary borders
+    secondary: '#333333',    // Secondary borders/separators
+    muted: '#2a2a2a',        // Subtle borders
   },
   
-  // Interactive colors
+  // Colors for interactive elements
   interactive: {
-    primary: '#d8ff00',      // Color de acento principal (amarillo-verde)
-    primaryText: '#000000',  // Texto sobre color primario
-    hover: '#333333',        // Estado hover
-    pressed: '#404040',      // Estado pressed
+    primary: '#d8ff00',      // Primary accent color (yellow-green)
+    primaryText: '#000000',  // Text on primary color
+    hover: '#333333',        // Hover state
+    pressed: '#404040',      // Pressed state
   },
   
-  // Status colors
+  // Status indication colors
   status: {
-    success: '#22c55e',      // Verde para éxito
-    warning: '#f59e0b',      // Amarillo para advertencias
-    error: '#ef4444',        // Rojo para errores
-    info: '#3b82f6',         // Azul para información
+    success: '#22c55e',      // Green for success
+    warning: '#f59e0b',      // Yellow for warnings
+    error: '#ef4444',        // Red for errors
+    info: '#3b82f6',         // Blue for information
   },
   
-  // Semantic colors for sports
+  // Semantic colors specific to sports context
   sports: {
-    win: '#22c55e',          // Verde para victorias
-    draw: '#f59e0b',         // Amarillo para empates
-    loss: '#ef4444',         // Rojo para derrotas
-    position: '#d8ff00',     // Color para posiciones destacadas
+    win: '#22c55e',          // Green for wins
+    draw: '#f59e0b',         // Yellow for draws
+    loss: '#ef4444',         // Red for losses
+    position: '#d8ff00',     // Color for highlighted positions
   }
 };
 
-// Función helper para usar los colores
+/**
+ * Helper function to access colors using dot notation
+ * Provides safe access to nested color values with fallback
+ * 
+ * @param path - Dot-separated path to color (e.g., 'background.primary')
+ * @returns Hex color value or fallback black color
+ */
 export const getColor = (path: string): string => {
   const keys = path.split('.');
   let current: any = colors;
@@ -56,7 +67,6 @@ export const getColor = (path: string): string => {
   for (const key of keys) {
     current = current[key];
     if (!current) {
-      console.warn(`Color path "${path}" not found`);
       return '#000000';
     }
   }
@@ -64,37 +74,40 @@ export const getColor = (path: string): string => {
   return current;
 };
 
-// Themes predefinidos para diferentes componentes
+/**
+ * Predefined theme configurations for common UI components
+ * Provides consistent styling patterns across the application
+ */
 export const componentThemes = {
-  // Theme para cards/contenedores
+  // Theme for cards and containers
   card: {
     background: colors.background.secondary,
     border: colors.border.primary,
     text: colors.text.primary,
   },
   
-  // Theme para headers
+  // Theme for headers
   header: {
     background: colors.background.tertiary,
     text: colors.text.secondary,
     border: colors.border.primary,
   },
   
-  // Theme para botones primarios
+  // Theme for primary buttons
   buttonPrimary: {
     background: colors.interactive.primary,
     text: colors.interactive.primaryText,
     border: colors.interactive.primary,
   },
   
-  // Theme para botones secundarios
+  // Theme for secondary buttons
   buttonSecondary: {
     background: colors.background.surface,
     text: colors.text.primary,
     border: colors.border.primary,
   },
   
-  // Theme para inputs/selects
+  // Theme for inputs and selects
   input: {
     background: colors.background.surface,
     text: colors.text.tertiary,
@@ -102,7 +115,7 @@ export const componentThemes = {
     placeholder: colors.text.muted,
   },
   
-  // Theme para tablas
+  // Theme for tables
   table: {
     headerBackground: colors.background.tertiary,
     headerText: colors.text.secondary,

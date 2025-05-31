@@ -1,18 +1,34 @@
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { colors } from '@colors';
 
+/**
+ * Interface for tab option configuration
+ * Defines structure for navigation tabs with labels and associated components
+ */
 export interface TabOption {
   id: string;
   label: string;
   component: React.ComponentType<any>;
 }
 
+/**
+ * Props interface for TabNavigation component
+ * Defines tab options, active state, and change handler
+ */
 interface TabNavigationProps {
   options: TabOption[];
   activeTabId: string;
   onTabChange: (tabId: string) => void;
 }
 
+/**
+ * Horizontal tab navigation component
+ * Provides scrollable tab bar with active/inactive states and dynamic styling
+ * Features pill-shaped buttons with smooth scrolling for overflow content
+ * 
+ * @param props - Tab navigation properties including options and state handlers
+ * @returns JSX element containing horizontal scrollable tab navigation
+ */
 const TabNavigation: React.FC<TabNavigationProps> = ({
   options,
   activeTabId,

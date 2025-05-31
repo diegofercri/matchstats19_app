@@ -25,6 +25,11 @@ import { ErrorScreen } from '@components/ui/ErrorScreen';
 
 import { colors } from '@colors';
 
+/**
+ * Competition detail screen component
+ * Displays comprehensive competition information with multiple view options
+ * Manages season selection, view navigation, and knockout presentation modes
+ */
 export default function CompetitionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   
@@ -46,10 +51,13 @@ export default function CompetitionDetailScreen() {
   
   const { activeViewId, setActiveViewId, requestedViewId, clearRequestedView } = useViewNavigation(selectedSeason, knockoutView);
 
-  // Generate view options
+  // Generate view options based on current season structure
   const viewOptions = generateViewOptions(selectedSeason, knockoutView);
 
-  // Handle initial view selection (only when requested)
+  /**
+   * Handle initial view selection (only when requested)
+   * Manages deep linking and initial view state
+   */
   useEffect(() => {
     if (!competition || !selectedSeason || viewOptions.length === 0) return;
     
@@ -69,7 +77,10 @@ export default function CompetitionDetailScreen() {
     }
   }, [competition, selectedSeason, viewOptions, requestedViewId, setActiveViewId, clearRequestedView]);
 
-  // Separate validation for cases where activeViewId becomes invalid
+  /**
+   * Separate validation for cases where activeViewId becomes invalid
+   * Ensures active view is always valid for current season structure
+   */
   useEffect(() => {
     if (!competition || !selectedSeason || viewOptions.length === 0) return;
     
@@ -80,7 +91,12 @@ export default function CompetitionDetailScreen() {
     }
   }, [competition, selectedSeason, viewOptions, activeViewId, requestedViewId, setActiveViewId]);
 
-  // Handle season change with knockout view reset
+  /**
+   * Handle season change with knockout view reset
+   * Resets knockout view mode when switching seasons
+   * 
+   * @param seasonId - Selected season identifier
+   */
   const onSeasonChange = (seasonId: string) => {
     handleSeasonChange(seasonId);
     resetKnockoutView();
