@@ -1,6 +1,7 @@
+// hooks/useCompetitionsList.ts
 import { useState, useEffect } from 'react';
-import { dummyCompetitions } from '@/dummyData';
-import { Competition } from '@types';
+import { Competition } from '@/types';
+import footballService from '@/services/footballService';
 
 interface UseCompetitionsListReturn {
   competitions: Competition[];
@@ -17,7 +18,6 @@ export const useCompetitionsList = (): UseCompetitionsListReturn => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  // Simula carga inicial de datos
   useEffect(() => {
     loadCompetitions();
   }, []);
@@ -25,11 +25,19 @@ export const useCompetitionsList = (): UseCompetitionsListReturn => {
   const loadCompetitions = async (): Promise<void> => {
     try {
       setLoading(true);
-      setError(null);      
-      setCompetitions(dummyCompetitions);
+      setError(null);
+      
+      console.log('🚀 Iniciando carga de competiciones...');
+      
+      const competitionsData = await footballService.getMainCompetitions();
+      setCompetitions(competitionsData);
+      
+      console.log(`✅ Competiciones cargadas: ${competitionsData.length}`);
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar las competiciones';
       setError(errorMessage);
+      console.error('❌ Error loading competitions:', err);
     } finally {
       setLoading(false);
     }

@@ -14,6 +14,7 @@ export const getBannerData = (): BannerData => {
   };
 };
 
+/*
 // Función para futuras mejoras - banners dinámicos
 export const getActiveBanner = async (): Promise<BannerData> => {
   // Aquí podrías hacer una llamada a la API
@@ -29,3 +30,4 @@ export const getAllBanners = async (): Promise<BannerData[]> => {
   // Placeholder para múltiples banners
   return [getBannerData()];
 };
+*/

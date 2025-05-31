@@ -53,9 +53,31 @@ export const generateViewOptions = (
     const hasKnockouts = selectedSeason.phases.some(
       (phase) => phase.type === "knockout"
     );
+    const hasLeague = selectedSeason.phases.some(
+      (phase) => phase.type === "league"
+    );
 
     if (hasGroups) {
       options.push({ id: "groups", label: "Grupos", component: Groups });
+    }
+
+    // AGREGAR STANDINGS PARA FASES DE LIGA
+    if (hasLeague) {
+      const leaguePhases = selectedSeason.phases.filter(phase => phase.type === "league");
+      const hasStandings = leaguePhases.some(phase => 
+        phase.standings && phase.standings.length > 0
+      );
+      
+      if (hasStandings) {
+        console.log(`✅ Agregando pestaña Clasificación - ${leaguePhases[0].standings?.length} equipos`);
+        options.push({
+          id: "standings",
+          label: "Clasificación",
+          component: Standings,
+        });
+      } else {
+        console.log(`⚠️ No se agregó Clasificación - sin standings en fases de liga`);
+      }
     }
 
     if (hasKnockouts) {
@@ -68,17 +90,21 @@ export const generateViewOptions = (
       });
     }
   } else if (selectedSeason?.standings && selectedSeason.standings.length > 0) {
-    // Traditional season structure (like LaLiga)
+    // Traditional season structure (like LaLiga) - LEGACY
+    console.log(`✅ Agregando pestaña Clasificación (legacy) - ${selectedSeason.standings.length} equipos`);
     options.push({
       id: "standings",
       label: "Clasificación",
       component: Standings,
     });
+  } else {
+    console.log(`⚠️ No se encontraron standings para mostrar pestaña Clasificación`);
   }
 
   // OVERVIEW - Always last
   options.push({ id: "overview", label: "Información", component: Overview });
 
+  console.log(`🎯 Pestañas generadas: ${options.map(o => o.label).join(', ')}`);
   return options;
 };
 
