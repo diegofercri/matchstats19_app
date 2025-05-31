@@ -11,7 +11,8 @@ import { useKnockoutView } from '@hooks/useKnockoutView';
 // Services
 import { 
   generateViewOptions, 
-  getComponentData, 
+  getComponentData,
+  getKnockoutBracketsData,
   isValidViewId, 
   getDefaultViewId 
 } from '@services/competitionService';
@@ -24,6 +25,7 @@ import { LoadingScreen } from '@components/ui/LoadingScreen';
 import { ErrorScreen } from '@components/ui/ErrorScreen';
 
 import { colors } from '@colors';
+import { Competition, Season } from '@/types';
 
 /**
  * Competition detail screen component
@@ -122,7 +124,13 @@ export default function CompetitionDetailScreen() {
     option => option.id === activeViewId
   )?.component;
   
-  const componentData = getComponentData(activeViewId, selectedSeason, competition);
+  // Determine which data to use based on view and knockout mode
+  const componentData = getComponentDataForView(
+    activeViewId, 
+    selectedSeason, 
+    competition, 
+    knockoutView
+  );
 
   return (
     <>
@@ -158,6 +166,30 @@ export default function CompetitionDetailScreen() {
       </ScrollView>
     </>
   );
+}
+
+/**
+ * Helper function to get appropriate component data based on view and knockout mode
+ * 
+ * @param activeViewId - Current active view
+ * @param selectedSeason - Current season
+ * @param competition - Current competition
+ * @param knockoutView - Current knockout view mode
+ * @returns Appropriate component data
+ */
+function getComponentDataForView(
+  activeViewId: string,
+  selectedSeason: Season | null,
+  competition: Competition | null,
+  knockoutView: 'list' | 'brackets'
+) {
+  // Para vista de eliminatorias en modo brackets, usar datos filtrados
+  if (activeViewId === "knockouts" && knockoutView === "brackets") {
+    return getKnockoutBracketsData(selectedSeason);
+  }
+  
+  // Para todas las demás vistas, usar datos normales
+  return getComponentData(activeViewId, selectedSeason, competition);
 }
 
 const styles = StyleSheet.create({

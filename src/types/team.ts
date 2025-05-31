@@ -18,25 +18,3 @@ export interface TeamInMatch {
   logo: string;
   score: number | null;
 }
-
-/**
- * Interface containing comprehensive team statistics
- * Includes match record, goals, points, and recent form
- */
-export interface TeamStats {
-  team: Team;
-  totalMatches: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsScored: number;
-  goalsConceded: number;
-  points: number;
-  recentForm: FormResult[];
-}
-
-/**
- * Type representing match results for team form tracking
- * G = Ganado (Won), E = Empatado (Draw), P = Perdido (Lost)
- */
-export type FormResult = 'G' | 'E' | 'P'; // Ganado, Empatado, Perdido

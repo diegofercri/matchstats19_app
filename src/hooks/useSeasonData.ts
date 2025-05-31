@@ -42,26 +42,39 @@ export const useSeasonData = (
    * Processes both phase-based and legacy season data structures
    */
   const seasonData = useMemo(() => {
-    if (!season) return { matches: [], standings: [], rounds: [] };
+    if (!season) {
+      return { matches: [], standings: [], rounds: [] };
+    }
     
     let allMatches: Match[] = [];
     let allStandings: StandingEntry[] = [];
     
-    if (season.phases) {
+    if (season.phases && season.phases.length > 0) {
       // Extract from phases structure
-      season.phases.forEach(phase => {
+      season.phases.forEach((phase) => {
         if (phase.type === 'league') {
-          allMatches.push(...(phase.matches || []));
-          allStandings.push(...(phase.standings || []));
+          const phaseMatches = phase.matches || [];
+          const phaseStandings = phase.standings || [];
+          allMatches.push(...phaseMatches);
+          allStandings.push(...phaseStandings);
         } else if (phase.type === 'knockout') {
+          let knockoutMatches: Match[] = [];
           phase.rounds?.forEach(round => {
-            allMatches.push(...(round.matches || []));
+            const roundMatches = round.matches || [];
+            knockoutMatches.push(...roundMatches);
           });
+          allMatches.push(...knockoutMatches);
         } else if (phase.type === 'groups') {
+          let groupMatches: Match[] = [];
+          let groupStandings: StandingEntry[] = [];
           phase.groups?.forEach(group => {
-            allMatches.push(...(group.matches || []));
-            allStandings.push(...(group.standings || []));
+            const gMatches = group.matches || [];
+            const gStandings = group.standings || [];
+            groupMatches.push(...gMatches);
+            groupStandings.push(...gStandings);
           });
+          allMatches.push(...groupMatches);
+          allStandings.push(...groupStandings);
         }
       });
     } else {

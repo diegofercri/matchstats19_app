@@ -1,5 +1,4 @@
 import { Team } from './team';
-import { FormResult } from './team';
 
 /**
  * Interface representing a single entry in competition standings/table
@@ -16,5 +15,4 @@ export interface StandingEntry {
   goalsAgainst: number;
   goalDifference: number;
   points: number;
-  form?: FormResult[];
 }

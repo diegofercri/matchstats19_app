@@ -130,12 +130,66 @@ const hasMatches = (selectedSeason: Season | null): boolean => {
         ? phase.groups?.flatMap((group) => group.matches) || []
         : phase.type === "knockout"
         ? phase.rounds?.flatMap((round) => round.matches) || []
+        : phase.type === "league"
+        ? phase.matches || [] 
         : []
     );
     return allMatches.length > 0;
   }
 
   return Boolean(selectedSeason.matches && selectedSeason.matches.length > 0);
+};
+
+/**
+ * Filters knockout rounds for bracket view (only semifinals and final)
+ * 
+ * @param rounds - All knockout rounds
+ * @returns Filtered rounds containing only semifinals and final
+ */
+const filterRoundsForBrackets = (rounds: KnockoutRound[]): KnockoutRound[] => {
+  return rounds.filter(round => {
+    const roundName = round.name.toLowerCase();
+    
+    // Excluir explícitamente cuartos de final y rondas anteriores
+    const excludePatterns = [
+      'quarter',
+      'quart',
+      '1/4',
+      'round of 16',
+      'round of 32',
+      '1/8',
+      'qualifying',
+      'play-off'
+    ];
+    
+    // Si contiene algún patrón de exclusión, no incluir
+    const shouldExclude = excludePatterns.some(pattern => roundName.includes(pattern));
+    if (shouldExclude) {
+      return false;
+    }
+    
+    // Patrones específicos para semifinales
+    const semiPatterns = [
+      'semi-final',
+      'semifinals', 
+      'semi-finals',
+      '1/2'
+    ];
+    
+    // Verificar si es semifinal
+    const isSemi = semiPatterns.some(pattern => {
+      if (pattern === '1/2') {
+        // Para 1/2, verificar que sea exactamente esa fracción
+        return roundName === '1/2' || roundName.includes('1/2');
+      }
+      return roundName.includes(pattern);
+    });
+    
+    // Verificar si es final (exactamente "final", no quarter-finals)
+    const isFinal = roundName === 'final';
+    
+    return isSemi || isFinal;
+  });
 };
 
 /**
@@ -154,35 +208,57 @@ export const getComponentData = (
 ): ComponentData => {
   switch (activeViewId) {
     case "groups":
-      return {
-        groups:
-          selectedSeason?.phases
-            ?.filter((phase) => phase.type === "groups")
-            .flatMap((phase) => phase.groups || []) || [],
-      };
+      const groups = selectedSeason?.phases
+        ?.filter((phase) => phase.type === "groups")
+        .flatMap((phase) => phase.groups || []) || [];
+      return { groups };
 
     case "knockouts":
-      return {
-        rounds:
-          selectedSeason?.phases
-            ?.filter((phase) => phase.type === "knockout")
-            .flatMap((phase) => phase.rounds || []) || [],
-      };
+      const allRounds = selectedSeason?.phases
+        ?.filter((phase) => phase.type === "knockout")
+        .flatMap((phase) => phase.rounds || []) || [];
+      
+      // Para brackets, filtrar solo semifinales y final
+      // Para lista, mostrar todas las rondas
+      const rounds = activeViewId === "knockouts" ? allRounds : filterRoundsForBrackets(allRounds);
+      
+      return { rounds };
 
     case "matches":
       if (selectedSeason?.phases) {
-        const allMatches = selectedSeason.phases.flatMap((phase) =>
-          phase.type === "groups"
-            ? phase.groups?.flatMap((group) => group.matches) || []
-            : phase.type === "knockout"
-            ? phase.rounds?.flatMap((round) => round.matches) || []
-            : []
-        );
+        const allMatches = selectedSeason.phases.flatMap((phase) => {
+          if (phase.type === "groups") {
+            return phase.groups?.flatMap((group) => group.matches) || [];
+          } else if (phase.type === "knockout") {
+            return phase.rounds?.flatMap((round) => round.matches) || [];
+          } else if (phase.type === "league") {
+            return phase.matches || [];
+          }
+          return [];
+        });
         return { matches: allMatches };
+      } else {
+        return { matches: selectedSeason?.matches || [] };
       }
-      return { matches: selectedSeason?.matches || [] };
 
     case "standings":
+      // Priorizar standings de fases de liga
+      if (selectedSeason?.phases) {
+        const leaguePhases = selectedSeason.phases.filter(phase => phase.type === "league");
+        if (leaguePhases.length > 0) {
+          const allStandings = leaguePhases.flatMap(phase => phase.standings || []);
+          return { standings: allStandings };
+        }
+        
+        // Fallback a standings de grupos
+        const groupPhases = selectedSeason.phases.filter(phase => phase.type === "groups");
+        const groupStandings = groupPhases.flatMap(phase => 
+          phase.groups?.flatMap(group => group.standings) || []
+        );
+        return { standings: groupStandings };
+      }
+      
+      // Fallback a estructura legacy
       return { standings: selectedSeason?.standings || [] };
 
     default:
@@ -194,6 +270,23 @@ export const getComponentData = (
         standings: selectedSeason?.standings || [],
       };
   }
+};
+
+/**
+ * Gets component data specifically for knockout brackets view
+ * Filters rounds to show only semifinals and final for bracket visualization
+ * 
+ * @param selectedSeason - Current season data
+ * @returns Component data with filtered knockout rounds for brackets
+ */
+export const getKnockoutBracketsData = (selectedSeason: Season | null): ComponentData => {
+  const allRounds = selectedSeason?.phases
+    ?.filter((phase) => phase.type === "knockout")
+    .flatMap((phase) => phase.rounds || []) || [];
+  
+  const filteredRounds = filterRoundsForBrackets(allRounds);
+  
+  return { rounds: filteredRounds };
 };
 
 /**

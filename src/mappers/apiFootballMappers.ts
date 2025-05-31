@@ -7,7 +7,6 @@ import {
   MatchStatus,
   StandingEntry,
   TeamInMatch,
-  FormResult
 } from '@/types';
 
 /**
@@ -140,26 +139,6 @@ export const mapMatch = (apiFixture: any): Match => {
 };
 
 /**
- * Maps team form string to FormResult array
- * Converts W/D/L format to Spanish G/E/P format
- * 
- * @param formString - Form string from API (e.g., "WWDLL")
- * @returns Array of FormResult values
- */
-const mapForm = (formString: string): FormResult[] => {
-  if (!formString) return [];
-  
-  return formString.split('').map(char => {
-    switch (char) {
-      case 'W': return 'G'; // Win -> Ganado
-      case 'D': return 'E'; // Draw -> Empatado
-      case 'L': return 'P'; // Loss -> Perdido
-      default: return 'E';
-    }
-  });
-};
-
-/**
  * Maps API-Football standing to application StandingEntry interface
  * 
  * @param apiStanding - Standing data from API-Football
@@ -177,7 +156,6 @@ export const mapStandingEntry = (apiStanding: any): StandingEntry => {
     goalsAgainst: apiStanding.all.goals.against,
     goalDifference: apiStanding.goalsDiff,
     points: apiStanding.points,
-    form: mapForm(apiStanding.form)
   };
   
   return mapped;
