@@ -28,7 +28,6 @@ export function Header({ competition }: HeaderProps) {
           <Image
             source={{ uri: competition.image }}
             style={styles.image}
-            resizeMode="cover"
           />
         </View>
       </View>
@@ -53,9 +52,19 @@ const styles = StyleSheet.create({
     height: 160,
     borderRadius: 16,
     backgroundColor: colors.background.secondary,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
     borderWidth: 1,
     borderColor: colors.border.muted,
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    // Elevation for Android
+    elevation: 3,
   },
   image: {
     width: "100%",

@@ -77,7 +77,7 @@ export const mapTeamInMatch = (apiTeam: any, goals: number | null): TeamInMatch 
 
 /**
  * Maps API-Football league to application Competition interface
- * ACTUALIZADA: Descripción solo muestra el país
+ * ACTUALIZADA: Usa el país de la respuesta de la API
  * 
  * @param apiLeague - League data from API-Football
  * @param apiCountry - Country data from API-Football
@@ -88,7 +88,7 @@ export const mapCompetition = (apiLeague: any, seasons: Season[] = [], apiCountr
   id: apiLeague.id.toString(),
   name: apiLeague.name,
   image: apiLeague.logo || '',
-  description: apiCountry?.name || '',
+  description: apiCountry?.name,
   startDate: '', // API-Football doesn't have this in leagues, obtained from seasons
   endDate: '',   // API-Football doesn't have this in leagues, obtained from seasons
   seasons: seasons,

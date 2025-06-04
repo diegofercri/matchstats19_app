@@ -40,7 +40,7 @@ export default function CompetitionListItem({
               numberOfLines={2}
               ellipsizeMode="tail"
             >
-              {competition.description || 'No descripción disponible'}
+              {competition.description}
             </Text>
           </View>
         </View>
