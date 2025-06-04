@@ -77,16 +77,18 @@ export const mapTeamInMatch = (apiTeam: any, goals: number | null): TeamInMatch 
 
 /**
  * Maps API-Football league to application Competition interface
+ * ACTUALIZADA: Descripción solo muestra el país
  * 
  * @param apiLeague - League data from API-Football
+ * @param apiCountry - Country data from API-Football
  * @param seasons - Array of mapped seasons for the competition
  * @returns Mapped Competition object
  */
-export const mapCompetition = (apiLeague: any, seasons: Season[] = []): Competition => ({
+export const mapCompetition = (apiLeague: any, seasons: Season[] = [], apiCountry?: any): Competition => ({
   id: apiLeague.id.toString(),
   name: apiLeague.name,
   image: apiLeague.logo || '',
-  description: `${apiLeague.name} - ${apiLeague.country?.name || ''}`,
+  description: apiCountry?.name || '',
   startDate: '', // API-Football doesn't have this in leagues, obtained from seasons
   endDate: '',   // API-Football doesn't have this in leagues, obtained from seasons
   seasons: seasons,
@@ -140,12 +142,13 @@ export const mapMatch = (apiFixture: any): Match => {
 
 /**
  * Maps API-Football standing to application StandingEntry interface
+ * ACTUALIZADA: Ahora incluye la propiedad group
  * 
  * @param apiStanding - Standing data from API-Football
  * @returns Mapped StandingEntry object
  */
 export const mapStandingEntry = (apiStanding: any): StandingEntry => {
-  const mapped = {
+  const mapped: StandingEntry = {
     position: apiStanding.rank,
     team: mapTeam(apiStanding.team),
     played: apiStanding.all.played,
@@ -158,6 +161,11 @@ export const mapStandingEntry = (apiStanding: any): StandingEntry => {
     points: apiStanding.points,
   };
   
+  // AGREGAR: Extraer grupo si existe
+  if (apiStanding.group) {
+    mapped.group = apiStanding.group;
+  }
+  
   return mapped;
 };
 
@@ -167,6 +175,7 @@ export const mapStandingEntry = (apiStanding: any): StandingEntry => {
 
 /**
  * Transforms API-Football leagues response to Competition array
+ * ACTUALIZADA: Pasa el país correctamente al mapCompetition
  * 
  * @param apiResponse - Raw API response for leagues
  * @returns Array of mapped Competition objects
@@ -180,7 +189,8 @@ export const transformLeaguesResponse = (apiResponse: any): Competition[] => {
       mapSeason(season, item.league.id)
     ) || [];
     
-    return mapCompetition(item.league, seasons);
+    // Pasar el país correctamente
+    return mapCompetition(item.league, seasons, item.country);
   });
 };
 
@@ -198,7 +208,7 @@ export const transformFixturesResponse = (apiResponse: any): Match[] => {
 
 /**
  * Transforms API-Football standings response to StandingEntry array
- * Handles group-based standings structure from the API
+ * CORREGIDA: Ahora procesa TODOS los grupos, no solo el primero
  * 
  * @param apiResponse - Raw API response for standings
  * @returns Array of mapped StandingEntry objects
@@ -208,23 +218,29 @@ export const transformStandingsResponse = (apiResponse: any): StandingEntry[] =>
     return [];
   }
   
-  // API-Football returns an array of leagues, each league has an array of standings
-  // Each standing can have multiple groups (for competitions with groups)
+  console.log('[DEBUG] Transforming standings response');
+  
   const league = apiResponse.response[0];
   const standingsGroups = league.league.standings; // Array of groups
   
-  // For normal leagues, take the first group
-  // For competitions with groups, we could expand this
-  if (standingsGroups && standingsGroups.length > 0) {
-    const firstGroup = standingsGroups[0]; // First group (main league)
-    
-    return firstGroup.map((standing: any) => {
-      const transformed = mapStandingEntry(standing);
-      return transformed;
-    });
-  }
+  console.log('[DEBUG] Standings groups found:', standingsGroups.length);
   
-  return [];
+  const allStandings: StandingEntry[] = [];
+  
+  // CORRIGIDO: Procesar TODOS los grupos, no solo el primero
+  standingsGroups.forEach((groupStandings: any[], groupIndex: number) => {
+    console.log(`[DEBUG] Processing group ${groupIndex + 1} with ${groupStandings.length} teams`);
+    
+    groupStandings.forEach((standing: any) => {
+      const transformedStanding = mapStandingEntry(standing);
+      allStandings.push(transformedStanding);
+    });
+  });
+  
+  console.log(`[DEBUG] Total standings transformed: ${allStandings.length}`);
+  console.log(`[DEBUG] Standings with group property:`, allStandings.filter(s => s.group).length);
+  
+  return allStandings;
 };
 
 /**
@@ -256,6 +272,7 @@ export const safeTransform = <T>(
   try {
     return transformer(apiResponse);
   } catch (error) {
+    console.error('[DEBUG] Transform error:', error);
     return fallback;
   }
 };
@@ -268,6 +285,8 @@ export const safeTransform = <T>(
  */
 export const transformRoundsResponse = (apiResponse: any): string[] => {
   if (!apiResponse.response) return [];
+  
+  console.log('[DEBUG] Transforming rounds response:', apiResponse.response.length, 'rounds');
   
   return apiResponse.response.map((round: string) => round);
 };

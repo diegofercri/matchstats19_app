@@ -15,4 +15,5 @@ export interface StandingEntry {
   goalsAgainst: number;
   goalDifference: number;
   points: number;
+  group?: string; // Only for groups
 }

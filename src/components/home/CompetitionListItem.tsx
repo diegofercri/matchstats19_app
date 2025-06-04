@@ -40,7 +40,7 @@ export default function CompetitionListItem({
               numberOfLines={2}
               ellipsizeMode="tail"
             >
-              {competition.description}
+              {competition.description || 'No descripción disponible'}
             </Text>
           </View>
         </View>
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 8,
+    resizeMode: 'contain',
   },
   content: {
     flex: 1,
